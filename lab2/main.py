@@ -1,6 +1,10 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
+A = -1 * np.pi
+B = 2 * np.pi
+POINTS = 500
+
 
 # funkcja interpolowana
 def f(x):
@@ -88,8 +92,8 @@ def newton(x, y, x0):
 # Funkcja wykonuje interpolację na przedziale (a, b) zawartym w zmiennej x, gdzie (x, y) to węzły, natomiast alg to
 # odpowiedni algorytm interpolujący. Do funkcji można przekazać dodatkowo liczbę punktów points > n, na podstawie
 # której będzie można narysować gładki wykres.
-def polynom(x, y, alg, points=500):
-    points = 500
+def polynom(x, y, alg):
+    points = POINTS
     a = x[0]
     b = x[len(x) - 1]
 
@@ -101,55 +105,70 @@ def polynom(x, y, alg, points=500):
     return x_axis, y_axis
 
 
-def draw(nodes, x, y):
-    plt.plot(x, y)
-    plt.plot(x, f(x))
+# funkcja rysująca pojedynczy wykres. Przyjmuje potrzebne elementy wykresu oraz *nazwę* algorytmu, aby łatwiej
+# przedstawić ją w legendzie
+def draw(nodes, x, y, alg='lagrange', node='regular'):
+
+    label="Wielomian interpolujący"
+    plt.plot(x, y, color='blue', linestyle='-', label=label)
+    plt.plot(x, f(x), color='red', linestyle='-', label='f(x) - funkcja interpolowana')
+    plt.scatter(nodes[0], nodes[1], s=25, color='black', label='węzeł')
+
+    plt.xlim(A, B)
+
+    plt.xlabel('x')
+    plt.ylabel('f(x)')
+
+    alg = alg.capitalize()
+    title = "Interpolacja metodą " + alg + "'a" + "\n dla węzłów "
+    if node == "regular":
+        title = title + "równoodległych"
+    elif node == "chebyshev":
+        title = title + "zgodnych z zerami wielomianu Czebyszewa"
+
+    plt.title(title)
+    plt.legend(loc='best')
+
     plt.show()
 
+def estimate_error(x, y):
+    return np.max(np.abs(f(x) - y))
 
-def draw_common(x_l, y_l, x_c, y_c, x_r, y_r, x_cc, y_cc):
-    plt.scatter(x_r, y_r, color="red")
-    plt.plot(x_l, y_l)
-    plt.plot(x_c, y_c)
+def estimate_error2(x, y):
+    return np.sqrt(np.sum((f(x) - y) ** 2)) / len(x)
 
-    plt.scatter(x_cc, y_cc)
+# pomocnicza funkcja pozwalająca uprościć rysowanie wykresu dla poszczególnych przypadków.
+def calculate_answer(node_t, alg_t, n):
+    nodes = (0, 0)
+    if node_t == "chebyshev":
+        nodes = create_chebyshev_nodes(A, B, n)
+    else:
+        nodes = create_regular_nodes(A, B, n)
 
-    plt.show()
+    if alg_t == "lagrange":
+        (x, y) = polynom(nodes[0], nodes[1], lagrange)
+
+    else:
+        (x, y) = polynom(nodes[0], nodes[1], newton)
+
+
+    print("Error 1: ", estimate_error(x, y))
+    print("Error 2: ", estimate_error2(x, y))
+
+    draw(nodes, x, y, alg_t, node_t)
+
 
 
 def main():
-    # parameters to change
-    a = -1 * np.pi
-    b = 2 * np.pi
-    n = 8
+    n = int(input('Number of nodes: '))
 
-    t = create_regular_nodes(a, b, n)
-    (k, l) = polynom(t[0], t[1], newton)
-    draw(t, k, l)
+    # Lagrange
+    calculate_answer("regular", "lagrange", n)
+    calculate_answer("chebyshev", "lagrange", n)
 
-    # # choose one of them
-    # alg = lagrange
-    # alg2 = newton
-    #
-    # x_r, y_r = create_regular_nodes(a, b, n)
-    # x_c, y_c = create_chebyshev_nodes(a, b, n)
-    #
-    # # Lagrange:
-    # ax_l, ay_l = polynom(x_r, y_r, lagrange)
-    # ax_l_c, ay_l_c = polynom(x_c, y_c, lagrange)
-    #
-    # # Newton
-    # ax_n_c, ay_n_c = polynom(x_c, y_c, newton)
-    # ax_n, ay_n = polynom(x_r, y_r, newton)
-    #
-    # draw(ax_l, ay_l, x_r, y_r)
-    # draw(ax_n, ay_n, x_r, y_r)
-    #
-    # draw(ax_l_c, ay_l_c, x_c, y_c)
-    # draw(ax_n_c, ay_n_c, x_c, y_c)
-    #
-    # draw_common(ax_l, ay_l, ax_l_c, ay_l_c, x_r, y_r, x_c, y_c)
-    # draw_common(ax_n, ay_n, ax_n_c, ay_n_c, x_r, y_r, x_c, y_c)
+    # Newton
+    calculate_answer("regular", "newton", n)
+    calculate_answer("chebyshev", "newton", n)
 
 
 if __name__ == "__main__":
