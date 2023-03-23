@@ -1,8 +1,12 @@
 import matplotlib.pyplot as plt
 import numpy as np
+import csv
 
+# stałe wskazują przedział [A, B]
 A = -1 * np.pi
 B = 2 * np.pi
+
+# stała wskazuje dla ilu punktów z przedziału [A, B] stworzony został wykres i przeprowadzona interpolacja
 POINTS = 500
 
 
@@ -107,15 +111,16 @@ def polynom(x, y, alg):
 
 # funkcja rysująca pojedynczy wykres. Przyjmuje potrzebne elementy wykresu oraz *nazwę* algorytmu, aby łatwiej
 # przedstawić ją w legendzie
-def draw(nodes, x, y, alg='lagrange', node='regular'):
-
-    label="Wielomian interpolujący"
+def draw(nodes, x, y, alg='lagrange', node='regular', n=0):
+    label = "Wielomian interpolujący"
     plt.plot(x, y, color='blue', linestyle='-', label=label)
     plt.plot(x, f(x), color='red', linestyle='-', label='f(x) - funkcja interpolowana')
     plt.scatter(nodes[0], nodes[1], s=25, color='black', label='węzeł')
 
     plt.xlim(A, B)
-
+    xticks = np.arange(-3 * np.pi / 2, 5 * np.pi / 2 + 1e-9, np.pi / 2)  # dodajemy 1e-9, aby dodać 5π/2
+    xticklabels = ['-3π/2', '-π', '-π/2', '0', 'π/2', 'π', '3π/2', '2π', '5π/2']
+    plt.xticks(xticks, xticklabels)
     plt.xlabel('x')
     plt.ylabel('f(x)')
 
@@ -125,21 +130,25 @@ def draw(nodes, x, y, alg='lagrange', node='regular'):
         title = title + "równoodległych"
     elif node == "chebyshev":
         title = title + "zgodnych z zerami wielomianu Czebyszewa"
-
+    title += " dla n = " + str(n)
     plt.title(title)
     plt.legend(loc='best')
 
+    path = "img/" + alg + '/' + node + '/' + "img_" + str(n)
+    plt.savefig(path)
     plt.show()
+
 
 def estimate_error(x, y):
     return np.max(np.abs(f(x) - y))
 
+
 def estimate_error2(x, y):
     return np.sqrt(np.sum((f(x) - y) ** 2)) / len(x)
 
+
 # pomocnicza funkcja pozwalająca uprościć rysowanie wykresu dla poszczególnych przypadków.
 def calculate_answer(node_t, alg_t, n):
-    nodes = (0, 0)
     if node_t == "chebyshev":
         nodes = create_chebyshev_nodes(A, B, n)
     else:
@@ -151,25 +160,64 @@ def calculate_answer(node_t, alg_t, n):
     else:
         (x, y) = polynom(nodes[0], nodes[1], newton)
 
+    err1 = estimate_error(x, y)
+    err2 = estimate_error2(x, y)
+    # print("Error 1: ", err1)
+    # print("Error 2: ", err2)
 
-    print("Error 1: ", estimate_error(x, y))
-    print("Error 2: ", estimate_error2(x, y))
-
-    draw(nodes, x, y, alg_t, node_t)
-
+    draw(nodes, x, y, alg_t, node_t, n)
+    return err1, err2
 
 
 def main():
-    n = int(input('Number of nodes: '))
+    best1 = (0, np.inf)
+    best2 = (0, np.inf)
+    best3 = (0, np.inf)
+    best4 = (0, np.inf)
 
-    # Lagrange
-    calculate_answer("regular", "lagrange", n)
-    calculate_answer("chebyshev", "lagrange", n)
+    res = []
 
-    # Newton
-    calculate_answer("regular", "newton", n)
-    calculate_answer("chebyshev", "newton", n)
+    while True:
+        p = input('>>')
+        if p.isdigit():
 
+
+
+
+            n = int(p)
+            err11, val1 = calculate_answer("regular", "lagrange", n)
+            err12, val2 = calculate_answer("chebyshev", "lagrange", n)
+            err13, val3 = calculate_answer("regular", "newton", n)
+            err14, val4 = calculate_answer("chebyshev", "newton", n)
+
+            if val1 < best1[1]:
+                best1 = n, val1
+            if val2 < best2[1]:
+                best2 = n, val2
+            if val3 < best3[1]:
+                best3 = n, val3
+            if val4 < best4[1]:
+                best4 = n, val4
+
+            print(err11, val1)
+            print(err12, val2)
+            print(err13, val3)
+            print(err14, val4)
+
+            line = [n, err11, val1, err12, val2, err13, val3, err14, val4]
+            res.append(line)
+        elif p == "exit":
+            break
+        elif p == "results":
+            print(best1, best2, best3, best4)
+        else:
+            print("You can either type an integer or 'exit' or 'results' commands!")
+
+
+    print(best1, best2, best3, best4)
+    with open('data/results.csv', mode='w', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerows(res)
 
 if __name__ == "__main__":
     main()
