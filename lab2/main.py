@@ -139,6 +139,7 @@ def draw(nodes, x, y, alg='lagrange', node='regular', n=0):
     plt.show()
 
 
+# szacowanie błędów na 2 sposoby
 def estimate_error(x, y):
     return np.max(np.abs(f(x) - y))
 
@@ -181,9 +182,6 @@ def main():
         p = input('>>')
         if p.isdigit():
 
-
-
-
             n = int(p)
             err11, val1 = calculate_answer("regular", "lagrange", n)
             err12, val2 = calculate_answer("chebyshev", "lagrange", n)
@@ -213,11 +211,11 @@ def main():
         else:
             print("You can either type an integer or 'exit' or 'results' commands!")
 
-
     print(best1, best2, best3, best4)
     with open('data/results.csv', mode='w', newline='') as file:
         writer = csv.writer(file)
         writer.writerows(res)
+
 
 if __name__ == "__main__":
     main()
