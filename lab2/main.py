@@ -1,3 +1,5 @@
+import os
+
 import matplotlib.pyplot as plt
 import numpy as np
 import csv
@@ -27,6 +29,7 @@ def create_chebyshev_nodes(a, b, n):
         x[k - 1] = 0.5 * (a + b) + 0.5 * (b - a) * np.cos(((2 * k - 1) / (2 * n)) * np.pi)
         y[k - 1] = f(x[k - 1])
 
+    # print(x)
     return x, y
 
 
@@ -98,10 +101,10 @@ def newton(x, y, x0):
 # której będzie można narysować gładki wykres.
 def polynom(x, y, alg):
     points = POINTS
-    a = x[0]
-    b = x[len(x) - 1]
+    # a = x[0]
+    # b = x[len(x) - 1]
 
-    x_axis = np.linspace(a, b, points)
+    x_axis = np.linspace(A, B, points)
     y_axis = np.zeros(points)
 
     for i in range(points):
@@ -134,9 +137,23 @@ def draw(nodes, x, y, alg='lagrange', node='regular', n=0):
     plt.title(title)
     plt.legend(loc='best')
 
-    path = "img/" + alg + '/' + node + '/' + "img_" + str(n)
-    plt.savefig(path)
+    folder1 = 'img'
+    folder2 = alg
+    folder3 = node
+    if not os.path.exists(folder1):
+        os.makedirs(folder1)
+    path2 = os.path.join(folder1, folder2)
+    if not os.path.exists(path2):
+        os.makedirs(path2)
+    path3 = os.path.join(path2, folder3)
+    if not os.path.exists(path3):
+        os.makedirs(path3)
+
+    path = "img_" + str(n)
+
+    plt.savefig(os.path.join(path3, path))
     plt.show()
+
 
 
 # szacowanie błędów na 2 sposoby
