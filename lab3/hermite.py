@@ -1,5 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import csv
+import os
 
 
 def fun(x: np.ndarray) -> np.ndarray:
@@ -68,17 +70,19 @@ def polynom(nodes, f, df):
     return x_axis, y_axis
 
 
-def draw(x_axis, y_axis, nodes, nodes_type):
+def draw(x_axis, y_axis, nodes, nodes_type, n):
     plt.plot(x_axis, fun(x_axis), color='red', linestyle='-', label='f(x) - funkcja interpolowana')
     plt.plot(x_axis, y_axis, color='blue', linestyle='-', label='w(x) - wielomain interpolujący')
     plt.scatter(nodes, fun(nodes), label='węzeł')
 
     if nodes_type == "chebyshev":
-        plt.title("Interpolacja Hermite'a dla węzłów Czebyszewa")
-
+        title = "Interpolacja Hermite'a dla węzłów Czebyszewa, n = {}".format(n)
+        filename = "chebyshev/plot_n{}.png".format(n)
     else:
-        plt.title("Interpolacja Hermite'a dla węzłów równoodległych")
+        title = "Interpolacja Hermite'a dla węzłów równoodległych, n = {}".format(n)
+        filename = "regular/plot_n{}.png".format(n)
 
+    plt.title(title)
     plt.xlim(A, B)
     xticks = np.arange(-3 * np.pi / 2, 5 * np.pi / 2 + 1e-9, np.pi / 2)  # dodajemy 1e-9, aby dodać 5π/2
     xticklabels = ['-3π/2', '-π', '-π/2', '0', 'π/2', 'π', '3π/2', '2π', '5π/2']
@@ -87,7 +91,10 @@ def draw(x_axis, y_axis, nodes, nodes_type):
     plt.ylabel('y')
     plt.legend(loc='best')
 
-    plt.savefig("test.png")
+    if not os.path.exists("img/{}".format(os.path.dirname(filename))):
+        os.makedirs("img/{}".format(os.path.dirname(filename)))
+
+    plt.savefig("img/{}".format(filename))
     plt.show()
 
 
@@ -100,15 +107,50 @@ def calculate(n, nodes_type):
     x_axis, y_axis = polynom(nodes, fun, dfun)
     err1 = estimate_error(x_axis, y_axis, fun)
     err2 = estimate_rms_error(x_axis, y_axis, fun)
-    draw(x_axis, y_axis, nodes, nodes_type)
+    draw(x_axis, y_axis, nodes, nodes_type, n)
 
     return err1, err2
 
 
 def main():
-    n = 11
-    err1, err2 = calculate(n, "regular")
-    print(f"Error 1: {err1}, Error 2: {err2}")
+    node_type = None
+    errors = []
+
+    # Check if results directory exists, create it if not
+    if not os.path.exists("results"):
+        os.makedirs("results")
+
+    while True:
+        # Ask user to choose between regular and Chebyshev nodes or exit
+        node_type_input = input("Choose node type (regular, chebyshev or exit): ")
+        if node_type_input == "exit":
+            if errors:
+                with open('results/errors.csv', mode='w', newline='') as file:
+                    writer = csv.writer(file)
+                    writer.writerow(["n", "node_type", "error1", "error2"])
+                    for err in errors:
+                        writer.writerow(err)
+                print("Errors saved to results/errors.csv")
+            break
+        elif node_type_input == "regular" or node_type_input == "chebyshev":
+            node_type = node_type_input
+        else:
+            print("Invalid node type. Please choose 'regular', 'chebyshev' or 'exit'.")
+
+        if node_type:
+            # Ask user for the number of nodes or exit to choose another mode
+            while True:
+                user_input = input("Enter an integer, or exit to choose another mode: ")
+                if user_input == "exit":
+                    break
+                else:
+                    try:
+                        n = int(user_input)
+                        err1, err2 = calculate(n, node_type)
+                        print(f"Error 1: {err1}, Error 2: {err2}")
+                        errors.append([n, node_type, err1, err2])
+                    except ValueError:
+                        print("Invalid input. Please enter an integer.")
 
 
 if __name__ == "__main__":
