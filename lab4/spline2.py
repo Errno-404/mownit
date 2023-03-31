@@ -56,12 +56,22 @@ def spline2(x_points, y_points, xs, boundary_cond):
     return ys
 
 
-def draw(xs, fun_xs, x_points, y_points, ys_natural, ys_nak):
+def draw(xs, fun_xs, x_points, y_points, ys_natural, ys_nak, n):
     plt.plot(xs, fun_xs)
-    plt.plot(x_points, y_points, 'o', label='Data Points')
+    plt.plot(x_points, y_points, 'o', label='Węzeł')
     plt.plot(xs, ys_natural, label='Natural')
     plt.plot(xs, ys_nak, label='Not-a-Knot')
-    plt.legend()
+
+
+    plt.legend(loc='best')
+    plt.xlabel("x")
+    plt.ylabel("y")
+    t = "Interpolacja funkcjami sklejanymi, " + str(n)
+    plt.title(t)
+
+    path = "img2/img_" + str(n)
+    plt.savefig(path)
+
     plt.show()
 
 
@@ -91,7 +101,7 @@ def calculate(n, nodes_type):
     x_axis = np.linspace(A, B, POINTS)
     y_axis_natural = spline2(nodes_x, nodes_y, x_axis, 'natural')
     y_axis_knot = spline2(nodes_x, nodes_y, x_axis, 'not-a-knot')
-    draw(x_axis, fun(x_axis), nodes_x, nodes_y, y_axis_natural, y_axis_knot)
+    draw(x_axis, fun(x_axis), nodes_x, nodes_y, y_axis_natural, y_axis_knot, n)
 
 
 # calculate(20, 'regular')

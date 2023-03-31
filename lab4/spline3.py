@@ -24,6 +24,7 @@ def fun(x: np.ndarray) -> np.ndarray:
 
 import numpy as np
 
+
 def calculate_cubic_spline(x, y, bc='natural'):
     n = len(x)
     h = np.diff(x)
@@ -82,7 +83,6 @@ def evaluate_spline(x_interp, x, y, b, c, d):
     return y_interp
 
 
-
 # def calculate_cubic_spline(x, y):
 #     n = len(x)
 #     h = np.diff(x)
@@ -136,13 +136,21 @@ def create_regular_nodes(x0: float, x1: float, n: int) -> np.ndarray:
     return np.linspace(x0, x1, n)
 
 
-def plot_spline(x, y, x_axis, y_axis_natural, y_axis_knot):
+def plot_spline(x, y, x_axis, y_axis_natural, y_axis_knot, n):
     plt.plot(x_axis, fun(x_axis), label='f(x)')
     plt.plot(x_axis, y_axis_natural, label='spline, natural')
     plt.plot(x_axis, y_axis_knot, label='spline, knot')
 
-    plt.plot(x, y, 'o', label='data')
+    plt.plot(x, y, 'o', label='węzeł')
     plt.legend(loc='best')
+    plt.xlabel("x")
+    plt.ylabel("y")
+    t = "Interpolacja funkcjami sklejanymi, " + str(n)
+    plt.title(t)
+
+
+    path = "img/img_" + str(n)
+    plt.savefig(path)
     plt.show()
 
 
@@ -160,16 +168,15 @@ def calculate_everything(nodes_type, n):
 
     x_axis = np.linspace(A, B, POINTS)
 
-
     b_n, c_n, d_n = calculate_cubic_spline(nodes, fun(nodes), 'natural')
     b_k, c_k, d_k = calculate_cubic_spline(nodes, fun(nodes), 'not-a-knot')
-
 
     y_axis_natural = evaluate_spline(x_axis, nodes, fun(nodes), b_n, c_n, d_n)
     y_axis_knot = evaluate_spline(x_axis, nodes, fun(nodes), b_k, c_k, d_k)
 
 
-    plot_spline(nodes, fun(nodes), x_axis, y_axis_natural, y_axis_knot)
+
+    plot_spline(nodes, fun(nodes), x_axis, y_axis_natural, y_axis_knot, n)
 
 
 def main():
