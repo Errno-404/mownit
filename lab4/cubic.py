@@ -2,6 +2,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 from enum import Enum
 import os
+import csv
 
 
 class Boundary(Enum):
@@ -14,15 +15,11 @@ B = 2 * np.pi
 POINTS = 500
 
 
-def f(x):
-    k = 3
-    m = 3
+def f(x, k=3, m=3):
     return np.exp(-k * np.sin(m * x)) + k * np.sin(m * x) - 1
 
 
-def df(x):
-    k = 3
-    m = 3
+def df(x, k=3, m=3):
     return k * m * np.cos(m * x) * (1 - np.exp(-k * np.sin(m * x)))
 
 
@@ -46,8 +43,8 @@ def get_si(i, x0, x, y, z, h):
 def get_solutions(n, h, x, y, l_boundary=Boundary.NATURAL, r_boundary=Boundary.NATURAL):
     matrix = [[0 for _ in range(n)] for _ in range(n)]
 
-    rval = [0 for _ in range(n)]
-    delta = [0 for _ in range(n - 1)]
+    rval = np.zeros(n)
+    delta = np.zeros(n - 1)
     for i in range(n - 1):
         delta[i] = (y[i + 1] - y[i]) / h[i]
 
@@ -77,84 +74,111 @@ def get_solutions(n, h, x, y, l_boundary=Boundary.NATURAL, r_boundary=Boundary.N
     return z
 
 
-def calculate(n, left, right):
+def calculate(n, left_boundary, right_boundary):
     x = create_equidistant_nodes(A, B, n)
     y = f(x)
     h = get_h(x)
-    z = get_solutions(n, h, x, y, left, right)
+    z = get_solutions(n, h, x, y, left_boundary, right_boundary)
 
     x_axis = np.linspace(A, B, POINTS)
-    y_axis = np.linspace(A, B, POINTS)
+    y_axis = np.empty_like(x_axis)
 
     ratio = POINTS / (n - 1)
     for i in range(POINTS):
         spline_index = int(i // ratio)
         y_axis[i] = get_si(spline_index, x_axis[i], x, y, z, h)
 
-    draw(n, x_axis, y_axis, x, left, right)
+    draw(n, x_axis, y_axis, x, left_boundary, right_boundary)
+    return estimate_error(x_axis, y_axis), estimate_error2(x_axis, y_axis)
+
+
+def estimate_error(x, y):
+    return np.max(np.abs(f(x) - y))
+
+
+def estimate_error2(x, y):
+    return np.sqrt(np.sum((f(x) - y) ** 2)) / len(x)
 
 
 def draw(n, x, y, nodes, left_boundary, right_boundary):
-    directory = './img/cubic'
-    if not os.path.exists(directory):
-        os.makedirs(directory)
+    output_dir = './img/cubic'
+    os.makedirs(output_dir, exist_ok=True)
 
-    left_boundary = 'clamped' if left_boundary == Boundary.CLAMPED else 'natural'
-    right_boundary = 'clamped' if right_boundary == Boundary.CLAMPED else 'natural'
+    left_boundary_str = 'clamped' if left_boundary == Boundary.CLAMPED else 'natural'
+    right_boundary_str = 'clamped' if right_boundary == Boundary.CLAMPED else 'natural'
 
-    filename = f'cubic_{n}_{left_boundary}_{right_boundary}.png'
-    filepath = os.path.join(directory, filename)
+    filename = f'cubic_{n}_{left_boundary_str}_{right_boundary_str}.png'
+    filepath = os.path.join(output_dir, filename)
 
-    plt.plot(x, y)
-    plt.scatter(nodes, f(nodes))
-    plt.plot(x, f(x))
+    plt.plot(x, y, label='w(x) - funkcja sklejana', color='blue')
+    plt.scatter(nodes, f(nodes), label='węzeł')
+    plt.plot(x, f(x), label='f(x) - funkcja interpolowana', color='red')
+
+    title = f'Interpolacja funkcjami sklejanymi stopnia 3, n = {n}\nWarunki brzegowe: {left_boundary_str}, {right_boundary_str}'
+    plt.title(title)
+    plt.xlim(A, B)
+    xticks = np.arange(-3 * np.pi / 2, 5 * np.pi / 2 + 1e-9, np.pi / 2)
+    xticklabels = ['-3π/2', '-π', '-π/2', '0', 'π/2', 'π', '3π/2', '2π', '5π/2']
+    plt.xticks(xticks, xticklabels)
+    plt.xlabel('x')
+    plt.ylabel('y')
+    plt.legend(loc='best')
+
     plt.savefig(filepath)
     plt.show()
 
 
 def main():
+    # Create the errors directory if it does not exist
+    if not os.path.exists('./errors/cubic'):
+        os.makedirs('./errors/cubic')
+
+    # Create the CSV file to store the data
+    file_path = "./errors/cubic/errors.csv"
+    with open(file_path, 'a', newline='') as csvfile:
+        writer = csv.writer(csvfile)
+        writer.writerow(['n', 'left_boundary_type', 'right_boundary_type', 'err_1', 'err_2'])
+
     while True:
-        cmd = input('Type n (number of nodes) or exit')
+        cmd = input('Type n (number of nodes) or exit: ')
         if cmd == 'exit':
             break
         elif cmd.isnumeric():
             n = int(cmd)
+            left_boundary = None
+            right_boundary = None
 
-            left_boundary = Boundary.NATURAL
-            right_boundary = Boundary.NATURAL
-            correct = False
-            exited = False
-            while not correct:
-                left_boundary = input('left boundary type: ')
-                if left_boundary == 'c':
+            # get left boundary type from user
+            while left_boundary not in [Boundary.CLAMPED, Boundary.NATURAL]:
+                left_boundary = input('Left boundary type (c/n/exit): ').strip()
+                if left_boundary == 'exit':
+                    break
+                elif left_boundary == 'c':
                     left_boundary = Boundary.CLAMPED
-                    correct = True
                 elif left_boundary == 'n':
                     left_boundary = Boundary.NATURAL
-                    correct = True
-                elif left_boundary == 'exit':
-                    exited = True
-                    break
                 else:
                     print("Unknown command")
 
-            correct = False
-            while not correct and not exited:
-                right_boundary = input('right boundary type: ')
-                if right_boundary == 'c':
+            # get right boundary type from user
+            while right_boundary not in [Boundary.CLAMPED, Boundary.NATURAL] and left_boundary is not None:
+                right_boundary = input('Right boundary type (c/n/exit): ').strip()
+                if right_boundary == 'exit':
+                    break
+                elif right_boundary == 'c':
                     right_boundary = Boundary.CLAMPED
-                    correct = True
                 elif right_boundary == 'n':
                     right_boundary = Boundary.NATURAL
-                    correct = True
-                elif right_boundary == 'exit':
-                    exited = True
-                    break
                 else:
                     print("Unknown command")
 
-            if not exited:
-                calculate(n, left_boundary, right_boundary)
+            if left_boundary is not None and right_boundary is not None:
+                err_1, err_2 = calculate(n, left_boundary, right_boundary)
+
+                # append errors to the CSV file
+                with open(file_path, 'a', newline='') as csvfile:
+                    writer = csv.writer(csvfile)
+                    writer.writerow([n, left_boundary.name, right_boundary.name, err_1, err_2])
         else:
             print("Unknown command")
 
