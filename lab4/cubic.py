@@ -12,7 +12,7 @@ class Boundary(Enum):
 
 A = -np.pi
 B = 2 * np.pi
-POINTS = 500
+POINTS = 1000
 
 
 def f(x, k=3, m=3):
@@ -35,6 +35,7 @@ def get_h(x):
 # returns value of i-th spline for x0
 def get_si(i, x0, x, y, z, h):
     b = (y[i + 1] - y[i]) / h[i] - h[i] * (z[i + 1] + 2 * z[i])
+
     c = 3 * z[i]
     d = (z[i + 1] - z[i]) / h[i]
     return y[i] + b * (x0 - x[i]) + c * (x0 - x[i]) ** 2 + d * (x0 - x[i]) ** 3
@@ -42,7 +43,6 @@ def get_si(i, x0, x, y, z, h):
 
 def get_solutions(n, h, x, y, l_boundary=Boundary.NATURAL, r_boundary=Boundary.NATURAL):
     matrix = [[0 for _ in range(n)] for _ in range(n)]
-
     rval = np.zeros(n)
     delta = np.zeros(n - 1)
     for i in range(n - 1):
@@ -58,17 +58,17 @@ def get_solutions(n, h, x, y, l_boundary=Boundary.NATURAL, r_boundary=Boundary.N
     if l_boundary == Boundary.NATURAL:
         matrix[0][0] = 1
     elif l_boundary == Boundary.CLAMPED:
-        matrix[0][0] = 2
-        matrix[0][1] = 1
-        rval[0] = (delta[0] - df(x[0])) / h[0]
+        matrix[0][0] = 2 * h[0]
+        matrix[0][1] = h[0]
+        rval[0] = delta[0] - df(x[n - 1])
 
     # right boundaries
     if r_boundary == Boundary.NATURAL:
         matrix[n - 1][n - 1] = 1
     elif r_boundary == Boundary.CLAMPED:
         matrix[n - 1][n - 2] = h[n - 2]
-        matrix[n - 1][n - 1] = 2
-        rval[n - 1] = (delta[n - 2] - df(x[n - 1])) / h[n - 2]
+        matrix[n - 1][n - 1] = 2 * h[n - 2]
+        rval[n - 1] = df(x[n - 1]) - delta[n - 2]
 
     z = np.linalg.solve(matrix, rval)
     return z
@@ -86,6 +86,7 @@ def calculate(n, left_boundary, right_boundary):
     ratio = POINTS / (n - 1)
     for i in range(POINTS):
         spline_index = int(i // ratio)
+        # print(spline_index)
         y_axis[i] = get_si(spline_index, x_axis[i], x, y, z, h)
 
     draw(n, x_axis, y_axis, x, left_boundary, right_boundary)
