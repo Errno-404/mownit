@@ -3,6 +3,7 @@
 import numpy as np
 from matplotlib import pyplot as plt
 from enum import Enum
+import os
 
 
 class Boundary(Enum):
@@ -105,12 +106,20 @@ def calculate(n, l, r):
         spline_index = int(i // ratio)
         y_axis[i] = get_si(spline_index, x_axis[i], x, y, z, h)
 
-    draw(x_axis, y_axis)
+    draw(n, x_axis, y_axis)
 
 
-def draw(x, y):
+def draw(n, x, y):
     plt.plot(x, y)
     plt.plot(x, f(x))
+
+    dir_name = './cubic'
+    if not os.path.exists(dir_name):
+        os.makedirs(dir_name)
+
+    file_name = 'cubic_{}.png'.format(n)
+    plt.savefig(os.path.join(dir_name, file_name))
+
     plt.show()
 
 
