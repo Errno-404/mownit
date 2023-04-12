@@ -129,60 +129,71 @@ def draw(n, x, y, nodes, left_boundary, right_boundary):
     plt.show()
 
 
+import os
+import csv
+
+import csv
+import os
+
+import csv
+import os
+
+
 def main():
-    # Create the errors directory if it does not exist
-    if not os.path.exists('./errors/cubic'):
-        os.makedirs('./errors/cubic')
+    dir_path = './errors/cubic'
+    file_path = os.path.join(dir_path, 'error.csv')
+    header = ['n', 'left_boundary', 'right_boundary', 'err_1', 'err_2']
 
-    # Create the CSV file to store the data
-    file_path = "./errors/cubic/errors.csv"
-    with open(file_path, 'a', newline='') as csvfile:
-        writer = csv.writer(csvfile)
-        writer.writerow(['n', 'left_boundary_type', 'right_boundary_type', 'err_1', 'err_2'])
+    # create directory if it doesn't exist
+    if not os.path.exists(dir_path):
+        os.makedirs(dir_path)
 
-    while True:
-        cmd = input('Type n (number of nodes) or exit: ')
-        if cmd == 'exit':
-            break
-        elif cmd.isnumeric():
-            n = int(cmd)
-            left_boundary = None
-            right_boundary = None
+    file_exists = os.path.exists(file_path)
 
-            # get left boundary type from user
-            while left_boundary not in [Boundary.CLAMPED, Boundary.NATURAL]:
-                left_boundary = input('Left boundary type (c/n/exit): ').strip()
-                if left_boundary == 'exit':
-                    break
-                elif left_boundary == 'c':
-                    left_boundary = Boundary.CLAMPED
-                elif left_boundary == 'n':
-                    left_boundary = Boundary.NATURAL
-                else:
-                    print("Unknown command")
+    with open(file_path, 'a', newline='') as file:
+        writer = csv.writer(file)
+        if not file_exists:
+            writer.writerow(header)
 
-            # get right boundary type from user
-            while right_boundary not in [Boundary.CLAMPED, Boundary.NATURAL] and left_boundary is not None:
-                right_boundary = input('Right boundary type (c/n/exit): ').strip()
-                if right_boundary == 'exit':
-                    break
-                elif right_boundary == 'c':
-                    right_boundary = Boundary.CLAMPED
-                elif right_boundary == 'n':
-                    right_boundary = Boundary.NATURAL
-                else:
-                    print("Unknown command")
+        while True:
+            cmd = input('Type n (number of nodes) or exit: ')
+            if cmd == 'exit':
+                break
+            elif cmd.isnumeric():
+                n = int(cmd)
+                left_boundary = None
+                right_boundary = None
 
-            if left_boundary is not None and right_boundary is not None:
-                err_1, err_2 = calculate(n, left_boundary, right_boundary)
+                # get left boundary type from user
+                while left_boundary not in [Boundary.CLAMPED, Boundary.NATURAL]:
+                    left_boundary = input('Left boundary type (c/n/exit): ').strip()
+                    if left_boundary == 'exit':
+                        break
+                    elif left_boundary == 'c':
+                        left_boundary = Boundary.CLAMPED
+                    elif left_boundary == 'n':
+                        left_boundary = Boundary.NATURAL
+                    else:
+                        print("Unknown command")
 
-                # append errors to the CSV file
-                with open(file_path, 'a', newline='') as csvfile:
-                    writer = csv.writer(csvfile)
-                    writer.writerow([n, left_boundary.name, right_boundary.name, err_1, err_2])
-        else:
-            print("Unknown command")
+                # get right boundary type from user
+                while right_boundary not in [Boundary.CLAMPED, Boundary.NATURAL] and left_boundary is not None:
+                    right_boundary = input('Right boundary type (c/n/exit): ').strip()
+                    if right_boundary == 'exit':
+                        break
+                    elif right_boundary == 'c':
+                        right_boundary = Boundary.CLAMPED
+                    elif right_boundary == 'n':
+                        right_boundary = Boundary.NATURAL
+                    else:
+                        print("Unknown command")
+
+                if left_boundary is not None and right_boundary is not None:
+                    err_1, err_2 = calculate(n, left_boundary, right_boundary)
+                    writer.writerow([n, left_boundary, right_boundary, err_1, err_2])
 
 
 if __name__ == "__main__":
     main()
+
+
