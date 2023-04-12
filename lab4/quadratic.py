@@ -48,8 +48,6 @@ def spline(n, h, x, y, r=Boundary.NATURAL):
         matrix[m - 1][m - 1] = 1
         rval[m - 1] = 2 * (y[m] - y[m - 1]) / h[m - 1] - df(x[n - 1])
 
-    print(matrix)
-
     b = np.linalg.solve(matrix, rval)
     return b
 
