@@ -115,7 +115,8 @@ def draw(n, x, y, nodes, left_boundary, right_boundary):
     plt.scatter(nodes, f(nodes), label='węzeł')
     plt.plot(x, f(x), label='f(x) - funkcja interpolowana', color='red')
 
-    title = f'Interpolacja funkcjami sklejanymi stopnia 3, n = {n}\nWarunki brzegowe: {left_boundary_str}, {right_boundary_str}'
+    title = f'Interpolacja funkcjami sklejanymi stopnia 3, n = {n}\nWarunki brzegowe: {left_boundary_str},' \
+            f' {right_boundary_str}'
     plt.title(title)
     plt.xlim(A, B)
     xticks = np.arange(-3 * np.pi / 2, 5 * np.pi / 2 + 1e-9, np.pi / 2)
@@ -127,16 +128,6 @@ def draw(n, x, y, nodes, left_boundary, right_boundary):
 
     plt.savefig(filepath)
     plt.show()
-
-
-import os
-import csv
-
-import csv
-import os
-
-import csv
-import os
 
 
 def main():
@@ -195,5 +186,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
