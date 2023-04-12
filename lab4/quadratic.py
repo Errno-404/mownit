@@ -117,49 +117,45 @@ def draw(n, x, y, nodes, right_boundary):
     plt.show()
 
 
-
 def main():
-    # Create the errors directory if it does not exist
-    if not os.path.exists('./errors/quadratic'):
-        os.makedirs('./errors/quadratic')
+    dir_path = './errors/quadratic'
+    file_path = os.path.join(dir_path, 'error.csv')
+    header = ['n', 'right_boundary', 'err_1', 'err_2']
 
-    # Open the CSV file for writing the headers
-    file_path = './errors/quadratic/errors.csv'
-    with open(file_path, 'a', newline='') as csvfile:
-        writer = csv.writer(csvfile)
-        writer.writerow(['n', 'boundary_type', 'err_1', 'err_2'])
+    # create directory if it doesn't exist
+    if not os.path.exists(dir_path):
+        os.makedirs(dir_path)
 
-    while True:
-        cmd = input('Type n (number of nodes) or exit: ')
-        if cmd == 'exit':
-            break
-        elif cmd.isnumeric():
-            n = int(cmd)
-            right_boundary = None
+    file_exists = os.path.exists(file_path)
 
-            # get right boundary type from user
-            while right_boundary not in [Boundary.CLAMPED, Boundary.NATURAL]:
-                right_boundary = input('Right boundary type (c/n/exit): ').strip()
-                if right_boundary == 'exit':
-                    break
-                elif right_boundary == 'c':
-                    right_boundary = Boundary.CLAMPED
-                elif right_boundary == 'n':
-                    right_boundary = Boundary.NATURAL
-                else:
-                    print("Unknown command")
+    with open(file_path, 'a', newline='') as file:
+        writer = csv.writer(file)
+        if not file_exists:
+            writer.writerow(header)
 
-            if right_boundary is not None:
-                err_1, err_2 = calculate(n, right_boundary)
+        while True:
+            cmd = input('Type n (number of nodes) or exit: ')
+            if cmd == 'exit':
+                break
+            elif cmd.isnumeric():
+                n = int(cmd)
+                right_boundary = None
 
-                # save errors to the CSV file
-                file_path = './errors/quadratic/errors.csv'
-                with open(file_path, 'a', newline='') as csvfile:
-                    writer = csv.writer(csvfile)
-                    writer.writerow([n, right_boundary.name, err_1, err_2])
-        else:
-            print("Unknown command")
+                # get right boundary type from user
+                while right_boundary not in [Boundary.CLAMPED, Boundary.NATURAL]:
+                    right_boundary = input('Right boundary type (c/n/exit): ').strip()
+                    if right_boundary == 'exit':
+                        break
+                    elif right_boundary == 'c':
+                        right_boundary = Boundary.CLAMPED
+                    elif right_boundary == 'n':
+                        right_boundary = Boundary.NATURAL
+                    else:
+                        print("Unknown command")
 
+                if right_boundary is not None:
+                    err_1, err_2 = calculate(n, right_boundary)
+                    writer.writerow([n, right_boundary, err_1, err_2])
 
 
 if __name__ == "__main__":
