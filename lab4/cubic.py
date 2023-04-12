@@ -106,20 +106,23 @@ def calculate(n, l, r):
         spline_index = int(i // ratio)
         y_axis[i] = get_si(spline_index, x_axis[i], x, y, z, h)
 
-    draw(n, x_axis, y_axis)
+    draw(n, x_axis, y_axis,l , r)
 
 
-def draw(n, x, y):
+def draw(n, x, y, left_boundary, right_boundary):
+    directory = './cubic'
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+
+    left_boundary = 'CLAMPED' if left_boundary == Boundary.CLAMPED else 'NATURAL'
+    right_boundary = 'CLAMPED' if right_boundary == Boundary.CLAMPED else 'NATURAL'
+
+    filename = f'cubic_{n}_{left_boundary}_{right_boundary}.png'
+    filepath = os.path.join(directory, filename)
+
     plt.plot(x, y)
     plt.plot(x, f(x))
-
-    dir_name = './cubic'
-    if not os.path.exists(dir_name):
-        os.makedirs(dir_name)
-
-    file_name = 'cubic_{}.png'.format(n)
-    plt.savefig(os.path.join(dir_name, file_name))
-
+    plt.savefig(filepath)
     plt.show()
 
 
@@ -130,18 +133,30 @@ def main():
             break
         elif cmd.isnumeric():
             n = int(cmd)
-            left_boundary = input('left boundary type: ')
-            right_boundary = input('right boundary type')
 
-            if left_boundary == 'clamped':
-                left_boundary = Boundary.CLAMPED
-            elif left_boundary == 'natural':
-                left_boundary = Boundary.NATURAL
+            correct = False
+            while not correct:
+                left_boundary = input('left boundary type: ')
+                if left_boundary == 'clamped':
+                    left_boundary = Boundary.CLAMPED
+                    correct = True
+                elif left_boundary == 'natural':
+                    left_boundary = Boundary.NATURAL
+                    correct = True
+                else:
+                    print("Unknown command")
 
-            if right_boundary == 'clamped':
-                right_boundary = Boundary.CLAMPED
-            elif right_boundary == 'natural':
-                right_boundary = Boundary.NATURAL
+            correct = False
+            while not correct:
+                right_boundary = input('right boundary type')
+                if right_boundary == 'clamped':
+                    right_boundary = Boundary.CLAMPED
+                    correct = True
+                elif right_boundary == 'natural':
+                    right_boundary = Boundary.NATURAL
+                    correct = True
+                else:
+                    print("Unknown command")
 
             calculate(n, left_boundary, right_boundary)
         else:
