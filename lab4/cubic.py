@@ -1,5 +1,3 @@
-# NATURAL AND NOT-A-KNOT SEEM TO BE WORKING
-# and that's it for spline3
 import numpy as np
 from matplotlib import pyplot as plt
 from enum import Enum
@@ -102,7 +100,6 @@ def calculate(n, left, right):
 
     ratio = POINTS / (n - 1)
     for i in range(POINTS):
-        # TODO some issues may be here due to spline_index calculations
         spline_index = int(i // ratio)
         y_axis[i] = get_si(spline_index, x_axis[i], x, y, z, h)
 
@@ -110,12 +107,12 @@ def calculate(n, left, right):
 
 
 def draw(n, x, y, left_boundary, right_boundary):
-    directory = './cubic'
+    directory = './img/cubic'
     if not os.path.exists(directory):
         os.makedirs(directory)
 
-    left_boundary = 'CLAMPED' if left_boundary == Boundary.CLAMPED else 'NATURAL'
-    right_boundary = 'CLAMPED' if right_boundary == Boundary.CLAMPED else 'NATURAL'
+    left_boundary = 'clamped' if left_boundary == Boundary.CLAMPED else 'natural'
+    right_boundary = 'clamped' if right_boundary == Boundary.CLAMPED else 'natural'
 
     filename = f'cubic_{n}_{left_boundary}_{right_boundary}.png'
     filepath = os.path.join(directory, filename)
@@ -128,8 +125,8 @@ def draw(n, x, y, left_boundary, right_boundary):
 
 def main():
     while True:
-        cmd = input('$ ')
-        if cmd == 'q':
+        cmd = input('Type n (number of nodes) or exit')
+        if cmd == 'exit':
             break
         elif cmd.isnumeric():
             n = int(cmd)
@@ -137,30 +134,38 @@ def main():
             left_boundary = Boundary.NATURAL
             right_boundary = Boundary.NATURAL
             correct = False
+            exited = False
             while not correct:
                 left_boundary = input('left boundary type: ')
-                if left_boundary == 'clamped':
+                if left_boundary == 'c':
                     left_boundary = Boundary.CLAMPED
                     correct = True
-                elif left_boundary == 'natural':
+                elif left_boundary == 'n':
                     left_boundary = Boundary.NATURAL
                     correct = True
+                elif left_boundary == 'exit':
+                    exited = True
+                    break
                 else:
                     print("Unknown command")
 
             correct = False
-            while not correct:
-                right_boundary = input('right boundary type')
-                if right_boundary == 'clamped':
+            while not correct and not exited:
+                right_boundary = input('right boundary type: ')
+                if right_boundary == 'c':
                     right_boundary = Boundary.CLAMPED
                     correct = True
-                elif right_boundary == 'natural':
+                elif right_boundary == 'n':
                     right_boundary = Boundary.NATURAL
                     correct = True
+                elif right_boundary == 'exit':
+                    exited = True
+                    break
                 else:
                     print("Unknown command")
 
-            calculate(n, left_boundary, right_boundary)
+            if not exited:
+                calculate(n, left_boundary, right_boundary)
         else:
             print("Unknown command")
 
