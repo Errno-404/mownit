@@ -7,7 +7,7 @@ from enum import Enum
 
 class Boundary(Enum):
     NATURAL = 0
-    NOT_A_KNOT = 1
+    CLAMPED = 1
 
 
 A = -np.pi
@@ -19,6 +19,12 @@ def f(x):
     k = 3
     m = 3
     return np.exp(-k * np.sin(m * x)) + k * np.sin(m * x) - 1
+
+
+def df(x):
+    k = 3
+    m = 3
+    return k * m * np.cos(m * x) * (1 - np.exp(-k * np.sin(m * x)))
 
 
 def create_equidistant_nodes(a, b, n):
@@ -39,7 +45,7 @@ def get_si(i, x0, x, y, z, h):
     return y[i] + b * (x0 - x[i]) + c * (x0 - x[i]) ** 2 + d * (x0 - x[i]) ** 3
 
 
-def get_solutions(n, h, y, l_boundary=Boundary.NOT_A_KNOT, r_boundary=Boundary.NOT_A_KNOT):
+def get_solutions(n, h, x, y, l_boundary=Boundary.NATURAL, r_boundary=Boundary.NATURAL):
     matrix = [[0 for _ in range(n)] for _ in range(n)]
 
     rval = [0 for _ in range(n)]
@@ -59,18 +65,26 @@ def get_solutions(n, h, y, l_boundary=Boundary.NOT_A_KNOT, r_boundary=Boundary.N
     if l_boundary == Boundary.NATURAL:
         matrix[0][0] = 1
 
-    elif l_boundary == Boundary.NOT_A_KNOT:
-        matrix[0][0] = 1
-        matrix[0][1] = (h[1] - h[0]) / h[1]
-        matrix[0][2] = h[0] / h[1]
+    # elif l_boundary == Boundary.NOT_A_KNOT:
+    #     matrix[0][0] = 1
+    #     matrix[0][1] = (h[1] - h[0]) / h[1]
+    #     matrix[0][2] = h[0] / h[1]
+    elif l_boundary == Boundary.CLAMPED:
+        matrix[0][0] = 2
+        matrix[0][1] = 1
+        rval[0] = (delta[0] - df(x[0])) / h[0]
 
     # right boundaries
     if r_boundary == Boundary.NATURAL:
         matrix[n - 1][n - 1] = 1
-    elif r_boundary == Boundary.NOT_A_KNOT:
+    # elif r_boundary == Boundary.NOT_A_KNOT:
+    #     matrix[n - 1][n - 1] = 1
+    #     matrix[n - 1][n - 2] = -(h[n - 3] + h[n - 2]) / h[n - 3]
+    #     matrix[n - 1][n - 3] = h[n - 2] / h[n - 3]
+    elif r_boundary == Boundary.CLAMPED:
         matrix[n - 1][n - 1] = 1
-        matrix[n - 1][n - 2] = -(h[n - 3] + h[n - 2]) / h[n - 3]
-        matrix[n - 1][n - 3] = h[n - 2] / h[n - 3]
+        matrix[n - 1][n - 2] = 2
+        rval[n - 1] = (delta[n - 2] - df(x[n - 1])) / h[n - 2]
 
     z = np.linalg.solve(matrix, rval)
     return z
@@ -80,7 +94,7 @@ def calculate(n, l, r):
     x = create_equidistant_nodes(A, B, n)
     y = f(x)
     h = get_h(x)
-    z = get_solutions(n, h, y, l, r)
+    z = get_solutions(n, h, x, y, l, r)
 
     x_axis = np.linspace(A, B, POINTS)
     y_axis = np.linspace(A, B, POINTS)
@@ -110,13 +124,13 @@ def main():
             left_boundary = input('left boundary type: ')
             right_boundary = input('right boundary type')
 
-            if left_boundary == 'not-a-knot':
-                left_boundary = Boundary.NOT_A_KNOT
+            if left_boundary == 'clamped':
+                left_boundary = Boundary.CLAMPED
             elif left_boundary == 'natural':
                 left_boundary = Boundary.NATURAL
 
-            if right_boundary == 'not-a-knot':
-                right_boundary = Boundary.NOT_A_KNOT
+            if right_boundary == 'clamped':
+                right_boundary = Boundary.CLAMPED
             elif right_boundary == 'natural':
                 right_boundary = Boundary.NATURAL
 
