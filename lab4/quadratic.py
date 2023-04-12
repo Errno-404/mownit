@@ -98,7 +98,7 @@ def draw(x, y, nodes):
 
 
 def main():
-    calculate(7, Boundary.CLAMPED)
+    calculate(12, Boundary.CLAMPED)
 
 
 if __name__ == "__main__":

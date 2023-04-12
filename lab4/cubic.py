@@ -40,7 +40,6 @@ def get_si(i, x0, x, y, z, h):
     b = (y[i + 1] - y[i]) / h[i] - h[i] * (z[i + 1] + 2 * z[i])
     c = 3 * z[i]
     d = (z[i + 1] - z[i]) / h[i]
-
     return y[i] + b * (x0 - x[i]) + c * (x0 - x[i]) ** 2 + d * (x0 - x[i]) ** 3
 
 
@@ -49,7 +48,6 @@ def get_solutions(n, h, x, y, l_boundary=Boundary.NATURAL, r_boundary=Boundary.N
 
     rval = [0 for _ in range(n)]
     delta = [0 for _ in range(n - 1)]
-    # TODO fix deltas
     for i in range(n - 1):
         delta[i] = (y[i + 1] - y[i]) / h[i]
 
@@ -60,14 +58,8 @@ def get_solutions(n, h, x, y, l_boundary=Boundary.NATURAL, r_boundary=Boundary.N
         rval[i] = delta[i] - delta[i - 1]
 
     # left boundaries:
-
     if l_boundary == Boundary.NATURAL:
         matrix[0][0] = 1
-
-    # elif l_boundary == Boundary.NOT_A_KNOT:
-    #     matrix[0][0] = 1
-    #     matrix[0][1] = (h[1] - h[0]) / h[1]
-    #     matrix[0][2] = h[0] / h[1]
     elif l_boundary == Boundary.CLAMPED:
         matrix[0][0] = 2
         matrix[0][1] = 1
@@ -76,13 +68,9 @@ def get_solutions(n, h, x, y, l_boundary=Boundary.NATURAL, r_boundary=Boundary.N
     # right boundaries
     if r_boundary == Boundary.NATURAL:
         matrix[n - 1][n - 1] = 1
-    # elif r_boundary == Boundary.NOT_A_KNOT:
-    #     matrix[n - 1][n - 1] = 1
-    #     matrix[n - 1][n - 2] = -(h[n - 3] + h[n - 2]) / h[n - 3]
-    #     matrix[n - 1][n - 3] = h[n - 2] / h[n - 3]
     elif r_boundary == Boundary.CLAMPED:
-        matrix[n - 1][n - 1] = 1
-        matrix[n - 1][n - 2] = 2
+        matrix[n - 1][n - 2] = h[n - 2]
+        matrix[n - 1][n - 1] = 2
         rval[n - 1] = (delta[n - 2] - df(x[n - 1])) / h[n - 2]
 
     z = np.linalg.solve(matrix, rval)
@@ -103,10 +91,10 @@ def calculate(n, left, right):
         spline_index = int(i // ratio)
         y_axis[i] = get_si(spline_index, x_axis[i], x, y, z, h)
 
-    draw(n, x_axis, y_axis, left, right)
+    draw(n, x_axis, y_axis, x, left, right)
 
 
-def draw(n, x, y, left_boundary, right_boundary):
+def draw(n, x, y, nodes, left_boundary, right_boundary):
     directory = './img/cubic'
     if not os.path.exists(directory):
         os.makedirs(directory)
@@ -118,6 +106,7 @@ def draw(n, x, y, left_boundary, right_boundary):
     filepath = os.path.join(directory, filename)
 
     plt.plot(x, y)
+    plt.scatter(nodes, f(nodes))
     plt.plot(x, f(x))
     plt.savefig(filepath)
     plt.show()
