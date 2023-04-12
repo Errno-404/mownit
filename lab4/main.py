@@ -5,8 +5,6 @@ from matplotlib import pyplot as plt
 from enum import Enum
 
 
-# 3 3 -pi , 2pi
-
 class Boundary(Enum):
     NATURAL = 0
     NOT_A_KNOT = 1
