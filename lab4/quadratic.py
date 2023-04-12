@@ -117,6 +117,7 @@ def draw(n, x, y, nodes, right_boundary):
     plt.show()
 
 
+
 def main():
     # Create the errors directory if it does not exist
     if not os.path.exists('./errors/quadratic'):
@@ -158,6 +159,7 @@ def main():
                     writer.writerow([n, right_boundary.name, err_1, err_2])
         else:
             print("Unknown command")
+
 
 
 if __name__ == "__main__":
