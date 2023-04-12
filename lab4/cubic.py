@@ -91,11 +91,11 @@ def get_solutions(n, h, x, y, l_boundary=Boundary.NATURAL, r_boundary=Boundary.N
     return z
 
 
-def calculate(n, l, r):
+def calculate(n, left, right):
     x = create_equidistant_nodes(A, B, n)
     y = f(x)
     h = get_h(x)
-    z = get_solutions(n, h, x, y, l, r)
+    z = get_solutions(n, h, x, y, left, right)
 
     x_axis = np.linspace(A, B, POINTS)
     y_axis = np.linspace(A, B, POINTS)
@@ -106,7 +106,7 @@ def calculate(n, l, r):
         spline_index = int(i // ratio)
         y_axis[i] = get_si(spline_index, x_axis[i], x, y, z, h)
 
-    draw(n, x_axis, y_axis,l , r)
+    draw(n, x_axis, y_axis, left, right)
 
 
 def draw(n, x, y, left_boundary, right_boundary):
@@ -134,6 +134,8 @@ def main():
         elif cmd.isnumeric():
             n = int(cmd)
 
+            left_boundary = Boundary.NATURAL
+            right_boundary = Boundary.NATURAL
             correct = False
             while not correct:
                 left_boundary = input('left boundary type: ')
