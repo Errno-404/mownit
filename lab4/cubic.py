@@ -12,7 +12,7 @@ class Boundary(Enum):
 
 A = -np.pi
 B = 2 * np.pi
-POINTS = 1000
+POINTS = 500
 
 
 def f(x, k=3, m=3):
