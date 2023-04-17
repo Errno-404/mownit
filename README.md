@@ -7,6 +7,7 @@
 - [Hermite interpolation](#lab3)
 - [Cubic and quadratic spline interpolation](#lab4--hard-)
 - [How to install & run](#running-examples)
+- [TODO](#todo)
 
 ## About
 
@@ -48,3 +49,8 @@ To be able to run and test those examples you'll need to follow these instructio
    your `terminal` or `cmd` and type `python <name_of_the_script>` or `python3 <name_of_the_script>`. Remember to
    add `.py` to the name of the script!
 4. For example if You want to run _hermite_, You have to run `python hermite.py`.
+
+## TODO
+- [ ] Approximation (lab 5)
+- [ ] Rebuild the project so it uses one structure
+- [ ] Add equations used in each lab!
