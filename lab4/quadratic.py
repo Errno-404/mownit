@@ -12,6 +12,7 @@ POINTS = 500
 class Boundary(Enum):
     NATURAL = 1
     CLAMPED = 2
+    NOTKNOT = 3
 
 
 def f(x, k=3, m=3):
@@ -47,6 +48,10 @@ def spline(n, h, x, y, r=Boundary.NATURAL):
     elif r == Boundary.CLAMPED:
         matrix[m - 1][m - 1] = 1
         rval[m - 1] = 2 * (y[m] - y[m - 1]) / h[m - 1] - df(x[n - 1])
+    elif r == Boundary.NOTKNOT:
+        matrix[m-1][m-1] = h[m-2]
+        matrix[m-1][m-2] = - h[m-1]
+        rval[m-1] = ((y[m] - y[m-1]) * h[m-2] ** 2 - (y[m-1] - y[m-2]) * h[m-1] ** 2) / (h[m-1] * h[m-2])
 
     b = np.linalg.solve(matrix, rval)
     return b
@@ -69,6 +74,8 @@ def calculate(n, r):
         c.append(((y[m] - y[m - 1]) / h[m - 1] - b[m - 1]) / h[m - 1])
     elif r == Boundary.CLAMPED:
         c.append((df(x[n - 1]) - b[-1]) / (2 * h[n - 2]))
+    elif r == Boundary.NOTKNOT:
+        c.append(c[-1])
 
     x_axis = np.linspace(A, B, POINTS)
     y_axis = np.linspace(A, B, POINTS)
@@ -142,14 +149,16 @@ def main():
                 right_boundary = None
 
                 # get right boundary type from user
-                while right_boundary not in [Boundary.CLAMPED, Boundary.NATURAL]:
-                    right_boundary = input('Right boundary type (c/n/exit): ').strip()
+                while right_boundary not in [Boundary.CLAMPED, Boundary.NATURAL, Boundary.NOTKNOT]:
+                    right_boundary = input('Right boundary type (c/n/k/exit): ').strip()
                     if right_boundary == 'exit':
                         break
                     elif right_boundary == 'c':
                         right_boundary = Boundary.CLAMPED
                     elif right_boundary == 'n':
                         right_boundary = Boundary.NATURAL
+                    elif right_boundary == 'k':
+                        right_boundary = Boundary.NOTKNOT
                     else:
                         print("Unknown command")
 
