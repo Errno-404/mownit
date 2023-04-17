@@ -5,7 +5,7 @@
 - [About this repo](#about)
 - [Basic interpolation](#lab2)
 - [Hermite interpolation](#lab3)
-- [Cubic and quadratic spline interpolation](#lab4--hard-)
+- [Cubic and quadratic spline interpolation](#lab4-hard)
 - [How to install & run](#running-examples)
 - [TODO](#todo)
 
@@ -52,5 +52,5 @@ To be able to run and test those examples you'll need to follow these instructio
 
 ## TODO
 - [ ] Approximation (lab 5)
-- [ ] Rebuild the project so it uses one structure
+- [x] Rebuild the project so it uses one structure
 - [ ] Add equations used in each lab!
