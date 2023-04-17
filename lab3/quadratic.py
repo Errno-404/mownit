@@ -49,9 +49,10 @@ def spline(n, h, x, y, r=Boundary.NATURAL):
         matrix[m - 1][m - 1] = 1
         rval[m - 1] = 2 * (y[m] - y[m - 1]) / h[m - 1] - df(x[n - 1])
     elif r == Boundary.NOTKNOT:
-        matrix[m-1][m-1] = h[m-2]
-        matrix[m-1][m-2] = - h[m-1]
-        rval[m-1] = ((y[m] - y[m-1]) * h[m-2] ** 2 - (y[m-1] - y[m-2]) * h[m-1] ** 2) / (h[m-1] * h[m-2])
+        matrix[m - 1][m - 1] = h[m - 2]
+        matrix[m - 1][m - 2] = - h[m - 1]
+        rval[m - 1] = ((y[m] - y[m - 1]) * h[m - 2] ** 2 - (y[m - 1] - y[m - 2]) * h[m - 1] ** 2) / (
+                h[m - 1] * h[m - 2])
 
     b = np.linalg.solve(matrix, rval)
     return b
@@ -101,7 +102,14 @@ def draw(n, x, y, nodes, right_boundary):
     output_dir = './img/quadratic'
     os.makedirs(output_dir, exist_ok=True)
 
-    right_boundary_str = 'clamped' if right_boundary == Boundary.CLAMPED else 'natural'
+    if right_boundary == Boundary.NATURAL:
+        right_boundary_str = 'natural'
+    elif right_boundary == Boundary.CLAMPED:
+        right_boundary_str = 'clamped'
+    elif right_boundary == Boundary.NOTKNOT:
+        right_boundary_str = 'not-a-knot'
+    else:
+        right_boundary_str = 'error'
 
     filename = f'quadratic_{n}_{right_boundary_str}.png'
     filepath = os.path.join(output_dir, filename)
