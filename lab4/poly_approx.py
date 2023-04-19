@@ -142,9 +142,10 @@ def repl():
             if ready:
                 print("running...")
             else:
-                print("Cannot run program with parameters (m, n) = ({}, {})!".format( m, n))
+                print("Cannot run program with parameters (m, n) = ({}, {})!".format(m, n))
         else:
             print("Unknown command!")
+
 
 def draw(x, xaxis, yaxis, f, m, n):
     plt.plot(xaxis, f(xaxis))
