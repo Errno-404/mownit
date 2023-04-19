@@ -1,5 +1,6 @@
 # Functions are written in that specific manner, so they can be easily converted to a class methods when I learn how to.
 import numpy as np
+import os
 from matplotlib import pyplot as plt
 
 A = -np.pi
@@ -71,24 +72,15 @@ def repl():
 
     ready = False
     while True:
-        print("(n, m) = ({}, {})".format(n, m))
-        if ready:
-            print(ready)
+        print("(m, n) = ({}, {})".format(m, n))
 
-
-
-
-        ready = False
-        user = input("n/m/exit")
+        user = input("Choose option: n | m | run | q\n>")
         if user == "n":
 
             while True:
 
-
-
-
-                print("(n, m) = ({}, {})".format(n, m))
-                user = input("n = ")
+                print("(m, n) = ({}, {})".format(m, n))
+                user = input("> n = ")
                 if user.isnumeric() and int(user) > 0:
                     tmp = int(user)
                     if 0 < m < tmp:
@@ -117,7 +109,7 @@ def repl():
 
         elif user == "m":
             while True:
-                print("(n, m) = ({}, {})".format(n, m))
+                print("(m, n) = ({}, {})".format(m, n))
                 user = input("m = ")
                 if user.isnumeric() and int(user) > 0:
                     tmp = int(user)
@@ -126,7 +118,7 @@ def repl():
                         m = tmp
                         break
                     elif 0 < tmp == n:
-                        confirmation = input("You are going to interpolate because n = m. Are you sure?(y/n)")
+                        confirmation = input("You are going to interpolate because n = m. Are you sure?(y/n)\n>")
                         if confirmation == "y":
                             ready = True
                             m = tmp
@@ -144,12 +136,15 @@ def repl():
                     break
                 else:
                     print("n is not a number!")
-        elif ready is True:
-            print(True)
-
-
-
-
+        elif user == "q":
+            return
+        elif user == "run":
+            if ready:
+                print("running...")
+            else:
+                print("Cannot run program with parameters (m, n) = ({}, {})!".format( m, n))
+        else:
+            print("Unknown command!")
 
 def draw(x, xaxis, yaxis, f, m, n):
     plt.plot(xaxis, f(xaxis))
