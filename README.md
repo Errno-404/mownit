@@ -51,6 +51,7 @@ To be able to run and test those examples you'll need to follow these instructio
 4. For example if You want to run _hermite_, You have to run `python hermite.py`.
 
 ## TODO
-- [ ] Approximation (lab 5)
+- [x] Approximation (lab 4)
+- [ ] Trigonometric interpolation (lab 5)
 - [x] Rebuild the project so it uses one structure
 - [ ] Add equations used in each lab!
