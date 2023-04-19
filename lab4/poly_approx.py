@@ -1,9 +1,12 @@
 # Functions are written in that specific manner, so they can be easily converted to a class methods when I learn how to.
 import numpy as np
 from matplotlib import pyplot as plt
+
 A = -np.pi
 B = 2 * np.pi
 P = 200
+
+
 def fun(x):
     return np.sin(x)
 
@@ -62,9 +65,59 @@ def calculate(m, f, n, w, x):
         yaxis[i] = get_polynom(xaxis[i], m, a)
     draw(x, xaxis, yaxis, f, m, n)
 
+
 def repl():
-    pass
-def draw(x, xaxis, yaxis, f, m ,n):
+    n = m = 0
+    ready = False
+    while True:
+        user = input("n/m/exit")
+        if user == "n":
+            while True:
+                user = input("n = ")
+                if user.isnumeric() and int(user) > 0:
+                    n = int(user)
+
+                    if 0 < m < n:
+                        ready = True
+                        break
+                    elif 0 < m == n:
+                        print("are you sure?")
+                        break
+                    elif 0 < n < m:
+                        print("n cannot be smaller than m!")
+                    else:
+                        ready = False
+                        break
+
+                elif user.isnumeric():
+                    print("n must be bigger than 0!")
+                elif user == "q":
+                    break
+                else:
+                    print("n is not a number!")
+
+
+
+
+        elif user == "m":
+            while True:
+                user = input("m = ")
+                if user.isnumeric():
+                    m = int(user)
+                    break
+                elif user == "q":
+                    break
+                else:
+                    print("n is not a number!")
+        elif user == "exit":
+            break
+
+        if ready:
+            print(n, m)
+
+
+
+def draw(x, xaxis, yaxis, f, m, n):
     plt.plot(xaxis, f(xaxis))
     plt.plot(xaxis, yaxis)
     plt.scatter(x, f(x))
@@ -72,13 +125,14 @@ def draw(x, xaxis, yaxis, f, m ,n):
 
 
 def main():
-
-
-    n = 6
+    n = 50
     m = 6
     x = np.linspace(A, B, n + 1)
     # x = [0, 1, 2, 3, 4]
     w = [1 for _ in range(n + 1)]
     calculate(m, fun, n, w, x)
+
+
 if __name__ == "__main__":
-    main()
+    # main()
+    repl()
