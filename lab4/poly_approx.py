@@ -69,27 +69,42 @@ def calculate(m, f, n, w, x):
 def repl():
     n = m = 0
 
+    ready = False
     while True:
+        print("(n, m) = ({}, {})".format(n, m))
+        if ready:
+            print(ready)
+
+
+
+
         ready = False
         user = input("n/m/exit")
         if user == "n":
 
             while True:
-                ready = False
+
+
+
+
+                print("(n, m) = ({}, {})".format(n, m))
                 user = input("n = ")
                 if user.isnumeric() and int(user) > 0:
-                    n = int(user)
-                    if 0 < m < n:
+                    tmp = int(user)
+                    if 0 < m < tmp:
                         ready = True
+                        n = tmp
                         break
-                    elif 0 < m == n:
+                    elif 0 < m == tmp:
                         confirmation = input("You are going to interpolate because n = m. Are you sure?(y/n)")
                         if confirmation == "y":
                             ready = True
+                            n = tmp
                             break
-                    elif 0 < n < m:
+                    elif 0 < tmp < m:
                         print("n cannot be smaller than m!")
-                    else:
+                    elif m == 0:
+                        n = tmp
                         break
 
                 elif user.isnumeric():
@@ -102,21 +117,24 @@ def repl():
 
         elif user == "m":
             while True:
-                ready = False
+                print("(n, m) = ({}, {})".format(n, m))
                 user = input("m = ")
                 if user.isnumeric() and int(user) > 0:
-                    m = int(user)
-                    if 0 < m < n:
+                    tmp = int(user)
+                    if 0 < tmp < n:
                         ready = True
+                        m = tmp
                         break
-                    elif 0 < m == n:
+                    elif 0 < tmp == n:
                         confirmation = input("You are going to interpolate because n = m. Are you sure?(y/n)")
                         if confirmation == "y":
                             ready = True
+                            m = tmp
                             break
-                    elif 0 < n < m:
+                    elif 0 < n < tmp:
                         print("n cannot be smaller than m!")
-                    else:
+                    elif n == 0:
+                        m = tmp
                         break
 
                 elif user.isnumeric():
@@ -126,11 +144,11 @@ def repl():
                     break
                 else:
                     print("n is not a number!")
-        elif user == "exit":
-            break
+        elif ready is True:
+            print(True)
 
-        if ready:
-            print(n, m)
+
+
 
 
 def draw(x, xaxis, yaxis, f, m, n):
