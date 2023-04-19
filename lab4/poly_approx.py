@@ -67,7 +67,19 @@ def calculate(m, f, n, w, x):
     draw(x, xaxis, yaxis, f, m, n)
 
 
-def repl():
+def draw(x, xaxis, yaxis, f, m, n):
+    title = f"Aproksymacja dla n = {n} i m = {m}"
+    plt.title(title)
+    plt.xlabel("x")
+    plt.ylabel("y")
+    plt.plot(xaxis, f(xaxis), label="F(x)")
+    plt.plot(xaxis, yaxis, label="f(x)")
+    plt.scatter(x, f(x), label="węzeł")
+    plt.legend(loc='best')
+    plt.show()
+
+
+def main():
     n = m = 0
 
     ready = False
@@ -141,28 +153,17 @@ def repl():
         elif user == "run":
             if ready:
                 print("running...")
+
+                x = np.linspace(A, B, n + 1)
+                w = [1 for _ in range(n + 1)]
+                calculate(m, fun, n, w, x)
+
+
             else:
                 print("Cannot run program with parameters (m, n) = ({}, {})!".format(m, n))
         else:
             print("Unknown command!")
 
 
-def draw(x, xaxis, yaxis, f, m, n):
-    plt.plot(xaxis, f(xaxis))
-    plt.plot(xaxis, yaxis)
-    plt.scatter(x, f(x))
-    plt.show()
-
-
-def main():
-    n = 50
-    m = 6
-    x = np.linspace(A, B, n + 1)
-    # x = [0, 1, 2, 3, 4]
-    w = [1 for _ in range(n + 1)]
-    calculate(m, fun, n, w, x)
-
-
 if __name__ == "__main__":
-    # main()
-    repl()
+    main()
