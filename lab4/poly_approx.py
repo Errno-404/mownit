@@ -68,44 +68,61 @@ def calculate(m, f, n, w, x):
 
 def repl():
     n = m = 0
-    ready = False
+
     while True:
+        ready = False
         user = input("n/m/exit")
         if user == "n":
+
             while True:
+                ready = False
                 user = input("n = ")
                 if user.isnumeric() and int(user) > 0:
                     n = int(user)
-
                     if 0 < m < n:
                         ready = True
                         break
                     elif 0 < m == n:
-                        print("are you sure?")
-                        break
+                        confirmation = input("You are going to interpolate because n = m. Are you sure?(y/n)")
+                        if confirmation == "y":
+                            ready = True
+                            break
                     elif 0 < n < m:
                         print("n cannot be smaller than m!")
                     else:
-                        ready = False
                         break
 
                 elif user.isnumeric():
                     print("n must be bigger than 0!")
                 elif user == "q":
+                    # hidden escape
                     break
                 else:
                     print("n is not a number!")
 
-
-
-
         elif user == "m":
             while True:
+                ready = False
                 user = input("m = ")
-                if user.isnumeric():
+                if user.isnumeric() and int(user) > 0:
                     m = int(user)
-                    break
+                    if 0 < m < n:
+                        ready = True
+                        break
+                    elif 0 < m == n:
+                        confirmation = input("You are going to interpolate because n = m. Are you sure?(y/n)")
+                        if confirmation == "y":
+                            ready = True
+                            break
+                    elif 0 < n < m:
+                        print("n cannot be smaller than m!")
+                    else:
+                        break
+
+                elif user.isnumeric():
+                    print("n must be bigger than 0!")
                 elif user == "q":
+                    # hidden escape
                     break
                 else:
                     print("n is not a number!")
@@ -114,7 +131,6 @@ def repl():
 
         if ready:
             print(n, m)
-
 
 
 def draw(x, xaxis, yaxis, f, m, n):
