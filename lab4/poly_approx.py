@@ -8,9 +8,10 @@ B = 2 * np.pi
 P = 200
 
 
-def fun(x):
-    return np.sin(x)
 
+
+def fun(x, m = 3, k = 3):
+    return np.exp(-k * np.sin(m * x)) + k * np.sin(m * x) - 1
 
 def get_weight(w, i):
     return w[i]
@@ -45,6 +46,7 @@ def solve_matrix(f, n, m, w, x):
         constants[i] = get_constants(f, i, n, w, x)
 
     a = np.linalg.solve(matrix, constants)
+    print(a)
     return a
 
 
@@ -148,6 +150,7 @@ def main():
                     break
                 else:
                     print("n is not a number!")
+
         elif user == "q":
             return
         elif user == "run":
