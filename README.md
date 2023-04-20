@@ -52,6 +52,6 @@ To be able to run and test those examples you'll need to follow these instructio
 
 ## TODO
 - [x] Approximation (lab 4)
-- [ ] Trigonometric interpolation (lab 5)
+- [ ] Trigonometric approximation (lab 5)
 - [x] Rebuild the project so it uses one structure
 - [ ] Add equations used in each lab!
