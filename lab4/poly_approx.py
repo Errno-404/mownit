@@ -6,7 +6,8 @@ from matplotlib import pyplot as plt
 A = -np.pi
 B = 2 * np.pi
 P = 200
-
+IMG_PATH = "./img"
+ERRORS_PATH = "./data"
 
 
 
@@ -46,7 +47,6 @@ def solve_matrix(f, n, m, w, x):
         constants[i] = get_constants(f, i, n, w, x)
 
     a = np.linalg.solve(matrix, constants)
-    print(a)
     return a
 
 
@@ -67,6 +67,11 @@ def calculate(m, f, n, w, x):
     for i in range(P):
         yaxis[i] = get_polynom(xaxis[i], m, a)
     draw(x, xaxis, yaxis, f, m, n)
+    return estimate_error2(f, xaxis, yaxis)
+
+
+def estimate_error2(f, x, y):
+    return np.sqrt(np.sum((f(x) - y) ** 2)) / len(x)
 
 
 def draw(x, xaxis, yaxis, f, m, n):
@@ -78,13 +83,23 @@ def draw(x, xaxis, yaxis, f, m, n):
     plt.plot(xaxis, yaxis, label="f(x)")
     plt.scatter(x, f(x), label="węzeł")
     plt.legend(loc='best')
+    plt.savefig(IMG_PATH + f"/img_{m}_{n}")
     plt.show()
 
 
 def main():
     n = m = 0
-
     ready = False
+
+    # creating directories if they don't exist
+    if not os.path.exists(ERRORS_PATH):
+        os.makedirs(ERRORS_PATH)
+
+    if not os.path.exists(IMG_PATH):
+        os.makedirs(IMG_PATH)
+
+
+    # repl
     while True:
         print("(m, n) = ({}, {})".format(m, n))
 
@@ -159,7 +174,7 @@ def main():
 
                 x = np.linspace(A, B, n + 1)
                 w = [1 for _ in range(n + 1)]
-                calculate(m, fun, n, w, x)
+                print(calculate(m, fun, n, w, x))
 
 
             else:

@@ -3,8 +3,10 @@
   <component name="NewModuleRootManager">
     <content url="file://$MODULE_DIR$">
       <excludeFolder url="file://$MODULE_DIR$/lab3/errors" />
-      <excludeFolder url="file://$MODULE_DIR$/lab3/img" />
       <excludeFolder url="file://$MODULE_DIR$/venv" />
+      <excludeFolder url="file://$MODULE_DIR$/lab3/img" />
+      <excludeFolder url="file://$MODULE_DIR$/lab4/data" />
+      <excludeFolder url="file://$MODULE_DIR$/lab4/img" />
     </content>
     <orderEntry type="jdk" jdkName="Python 3.10" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
