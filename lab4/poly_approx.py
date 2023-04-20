@@ -1,6 +1,7 @@
 # Functions are written in that specific manner, so they can be easily converted to a class methods when I learn how to.
 import numpy as np
 import os
+import csv
 from matplotlib import pyplot as plt
 
 A = -np.pi
@@ -10,9 +11,9 @@ IMG_PATH = "./img"
 ERRORS_PATH = "./data"
 
 
-
-def fun(x, m = 3, k = 3):
+def fun(x, m=3, k=3):
     return np.exp(-k * np.sin(m * x)) + k * np.sin(m * x) - 1
+
 
 def get_weight(w, i):
     return w[i]
@@ -95,9 +96,17 @@ def main():
     if not os.path.exists(ERRORS_PATH):
         os.makedirs(ERRORS_PATH)
 
+    # adding a header if file does not exist
+    if not os.path.isfile(ERRORS_PATH + "/errors.csv"):
+        with open(ERRORS_PATH + "/errors.csv", 'w', newline='') as file:
+            writer = csv.writer(file)
+            writer.writerow(["m", "n", "error"])
+
+    # creating directory for images
     if not os.path.exists(IMG_PATH):
         os.makedirs(IMG_PATH)
 
+    data = []
 
     # repl
     while True:
@@ -167,6 +176,14 @@ def main():
                     print("n is not a number!")
 
         elif user == "q":
+            with open(ERRORS_PATH + "/errors.csv", 'a', newline='') as file:
+                writer = csv.writer(file)
+
+                # write data row by row
+                if len(data) > 0:
+                    for row in data:
+                        # print(row)
+                        writer.writerow(row)
             return
         elif user == "run":
             if ready:
@@ -174,8 +191,9 @@ def main():
 
                 x = np.linspace(A, B, n + 1)
                 w = [1 for _ in range(n + 1)]
-                print(calculate(m, fun, n, w, x))
-
+                error = (calculate(m, fun, n, w, x))
+                row = [m, n, error]
+                data.append(row)
 
             else:
                 print("Cannot run program with parameters (m, n) = ({}, {})!".format(m, n))
