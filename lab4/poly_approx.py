@@ -6,7 +6,7 @@ from matplotlib import pyplot as plt
 
 A = -np.pi
 B = 2 * np.pi
-P = 200
+P = 1000
 IMG_PATH = "./img"
 ERRORS_PATH = "./data"
 
