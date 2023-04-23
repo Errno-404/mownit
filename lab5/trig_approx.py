@@ -88,13 +88,22 @@ def main():
             writer = csv.writer(file)
             writer.writerow(["m", "n", "error"])
 
+    csv_lines = []
 
-    for n in range(5, 200, 5):
-        for m in range(1, int((n-1) / 2) + 1):
-            # print(n, m)
-            print(calculate(n, m))
+    for n in range(5, 100, 5):
+        for m in range(1, int((n - 1) / 2) + 1):
+            row = [m, n, calculate(n, m)]
+            csv_lines.append(row)
 
-    # print(calculate(50, 12))
+    for m in range(5, 100, 5):
+        for n in range(2 * m + 1, 100, 5):
+            row = [m, n, calculate(n, m)]
+            csv_lines.append(row)
+
+    with open(ERROR_PATH + "/errors.csv", 'a', newline='') as file:
+        writer = csv.writer(file)
+        for row in csv_lines:
+            writer.writerow(row)
 
 
 if __name__ == "__main__":
