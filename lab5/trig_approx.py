@@ -65,29 +65,28 @@ def scale_point_to_2pi(x):
     return x
 
 
-def approximate(X, A, B, m):
+def approximate(X, a, b, m):
     points = []
     for x in X:
-        cp_x = deepcopy(x)
-        cp_x = scale_point_to_2pi(cp_x)
-        approximated_x = 1 / 2 * A[0] + sum(A[j] * np.cos(j * cp_x) + B[j] * np.sin(j * cp_x)
+        x = deepcopy(x)
+        x = scale_point_to_2pi(x)
+        approximated_x = 1 / 2 * a[0] + sum(a[j] * np.cos(j * x) + b[j] * np.sin(j * x)
                                             for j in range(1, m + 1))
         points.append(approximated_x)
     return points
 
 
 def calculate(n, m):
-    X = np.linspace(A, B, n)
-    Y = func(X)
-    scaled_x = scale_to_2pi(X)
-    a, b = compute_A_and_B(scaled_x, Y, n)
-    c = X
-    print(approximate(c, a, b, m))
+    x = np.linspace(A, B, n)
+    y = func(x)
+
+    scaled_x = scale_to_2pi(x)
+    a, b = compute_A_and_B(scaled_x, y, n)
 
     xaxis = np.linspace(A, B, POINTS)
     yaxis = approximate(xaxis, a, b, m)
 
-    draw(X, Y, n, m, xaxis, yaxis)
+    draw(x, y, n, m, xaxis, yaxis)
 
 
 def main():
