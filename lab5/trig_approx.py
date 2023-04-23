@@ -54,12 +54,19 @@ class TrigonometricApproximation:
             self.X[i] *= 2 * np.pi
             self.X[i] += -np.pi - (2 * np.pi * self.start / range_length)
 
+        # print(self.X)
+
+    # scale_to_2pi to prepare X
+    # compute_A_and_B
+
     def compute_A_and_B(self):
         for i in range(self.n):
             ai = sum(self.Y[j] * np.cos(i * self.X[j]) for j in range(self.n))
             bi = sum(self.Y[j] * np.sin(i * self.X[j]) for j in range(self.n))
             self.A[i] = 2 * ai / self.n
             self.B[i] = 2 * bi / self.n
+
+        print(self.A, self.B)
 
     def scale_from_2pi(self):
         range_length = self.stop - self.start
@@ -83,22 +90,91 @@ class TrigonometricApproximation:
             approximated_x = 1 / 2 * self.A[0] + sum(self.A[j] * np.cos(j * cp_x) + self.B[j] * np.sin(j * cp_x)
                                                      for j in range(1, self.m + 1))
             points.append(approximated_x)
-        return points
+        return self.A, self.B
+
+
+def scale_to_2pi(X):
+    x_prim = deepcopy(X)
+    n = len(x_prim)
+    range_length = B - A
+    for i in range(n):
+        x_prim[i] = X[i] / range_length
+        x_prim[i] = x_prim[i] * 2 * np.pi
+        x_prim[i] = x_prim[i] + -np.pi - (2 * np.pi * A / range_length)
+
+    # print(x_prim)
+    return x_prim
+
+    # scale_to_2pi to prepare X
+    # compute_A_and_B
+
+
+def compute_A_and_B(X, Y, n):
+    left = np.zeros(n)
+    right = np.zeros(n)
+    for i in range(n):
+        ai = sum(Y[j] * np.cos(i * X[j]) for j in range(n))
+        bi = sum(Y[j] * np.sin(i * X[j]) for j in range(n))
+        left[i] = 2 * ai / n
+        right[i] = 2 * bi / n
+    return left, right
+
+
+def scale_point_to_2pi(x):
+    range_length = B - A
+    x /= range_length
+    x *= 2 * np.pi
+    x += -np.pi - (2 * np.pi * A / range_length)
+    return x
+
+
+def approximate(X, A, B, m):
+    points = []
+    for x in X:
+        cp_x = deepcopy(x)
+        cp_x = scale_point_to_2pi(cp_x)
+        approximated_x = 1 / 2 * A[0] + sum(A[j] * np.cos(j * cp_x) + B[j] * np.sin(j * cp_x)
+                                            for j in range(1, m + 1))
+        points.append(approximated_x)
+    return points
 
 
 def calculate(n, m):
     X = np.linspace(A, B, n)
     Y = func(X)
+
+
+
+    scaled_x = scale_to_2pi(X)
+    a, b = compute_A_and_B(scaled_x, Y, n)
+    print(a, b)
+
+
+
+
+
+    # yaxis = approximate(scaled_x, a, b, m)
+    # xaxis = np.linspace(A, B, len(yaxis))
+
+
+
+
+
+
     trigonometric_approximation = TrigonometricApproximation(X, Y, n, m, A, B)
-    draw(X, Y, n, m, trigonometric_approximation.approximate)
+    a_p, b_p = trigonometric_approximation.approximate(X)
+    for i in range(len(a)):
+        if a[i] != a_p[i]:
+            print(abs(a[i] - a_p[i]))
+    # draw(X, Y, n, m, trigonometric_approximation.approximate)
 
 
 def main():
     if not os.path.exists(IMG_PATH):
         os.makedirs(IMG_PATH)
 
-
     calculate(100, 23)
+
 
 if __name__ == "__main__":
     main()
