@@ -1,25 +1,28 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import os
 from copy import deepcopy
 
 IMG_PATH = "./img"
+A = -np.pi
+B = 2 * np.pi
 POINTS = 1000
+
 
 def func(x, k=3, m=3):
     return np.exp(-k * np.sin(m * x)) + k * np.sin(m * x) - 1
 
 
-def draw(x, y, left, right, n, m, f):
+def draw(x, y, n, m, f):
     plt.scatter(x, y, label="data", color="red")
-    xaxis = np.linspace(left, right, POINTS)
+    xaxis = np.linspace(A, B, POINTS)
     plt.plot(xaxis, func(xaxis), label="F(x)", color="red")
     plt.plot(xaxis, f(xaxis), label="f(x)", color="blue")
     plt.title(f"Aproksymacja wielomianami trygonometrycznymi dla n = {n} i  m = {m}")
-    plt.xlim(left, right)
+    plt.xlim(A, B)
     xticks = np.arange(-3 * np.pi / 2, 5 * np.pi / 2 + 1e-9, np.pi / 2)  # dodajemy 1e-9, aby dodać 5π/2
     xticklabels = ['-3π/2', '-π', '-π/2', '0', 'π/2', 'π', '3π/2', '2π', '5π/2']
     plt.xticks(xticks, xticklabels)
-
 
     plt.xlabel("x")
     plt.ylabel("y")
@@ -83,11 +86,19 @@ class TrigonometricApproximation:
         return points
 
 
-def calculate(left, right, n, m):
-    X = np.linspace(left, right, n)
+def calculate(n, m):
+    X = np.linspace(A, B, n)
     Y = func(X)
-    trigonometric_approximation = TrigonometricApproximation(X, Y, n, m, left, right)
-    draw(X, Y, left, right, n, m, trigonometric_approximation.approximate)
+    trigonometric_approximation = TrigonometricApproximation(X, Y, n, m, A, B)
+    draw(X, Y, n, m, trigonometric_approximation.approximate)
 
 
-calculate(-np.pi, 2 * np.pi, 100, 23)
+def main():
+    if not os.path.exists(IMG_PATH):
+        os.makedirs(IMG_PATH)
+
+
+    calculate(100, 23)
+
+if __name__ == "__main__":
+    main()
