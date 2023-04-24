@@ -76,15 +76,19 @@ def estimate_error2(f, x, y):
 
 
 def draw(x, xaxis, yaxis, f, m, n):
-    title = f"Aproksymacja dla n = {n} i m = {m}"
+    title = f"Aproksymacja dla n = {n + 1} i m = {m}"
     plt.title(title)
     plt.xlabel("x")
     plt.ylabel("y")
     plt.plot(xaxis, f(xaxis), label="F(x)")
     plt.plot(xaxis, yaxis, label="f(x)")
     plt.scatter(x, f(x), label="węzeł")
+    plt.xlim(A, B)
+    plt.xticks([-3 * np.pi / 2, -np.pi, -np.pi / 2, 0, np.pi / 2, np.pi, 3 * np.pi / 2, 2 * np.pi, 5 * np.pi / 2],
+               ['-3π/2', '-π', '-π/2', '0', 'π/2', 'π', '3π/2', '2π', '5π/2'])
+
     plt.legend(loc='best')
-    plt.savefig(IMG_PATH + f"/img_{m}_{n}")
+    plt.savefig(IMG_PATH + f"/img_{m}_{n + 1}")
     plt.show()
 
 
@@ -192,12 +196,30 @@ def main():
                 x = np.linspace(A, B, n + 1)
                 w = [1 for _ in range(n + 1)]
                 error = (calculate(m, fun, n, w, x))
-                row = [m, n, error]
+                row = [m, n + 1, error]
                 data.append(row)
 
             else:
                 print("Cannot run program with parameters (m, n) = ({}, {})!".format(m, n))
+        elif user == "auto":
+
+            for n in range(4, 100, 5):
+                m = 5
+                while m < 31:
+                    if m >= n:
+                        break
+                    else:
+                        x = np.linspace(A, B, n + 1)
+                        w = [1 for _ in range(n + 1)]
+                        error = calculate(m, fun, n, w, x)
+                        row = [m, n + 1, error]
+                        data.append(row)
+                    if m < 10:
+                        m += 1
+                    else:
+                        m+= 5
         else:
+
             print("Unknown command!")
 
 
