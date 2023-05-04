@@ -6,6 +6,14 @@ B = 2 * np.pi
 POINTS = 1000
 
 
+# def fun(x, k=1, m=2):
+#     return np.exp(-k * np.sin(m * x)) + k * np.cos(m * x)
+#
+#
+# A = -2 * np.pi
+# B = 3 * np.pi
+
+
 def fun(x, k=3, m=3):
     return np.exp(-k * np.sin(m * x)) + k * np.sin(m * x) - 1
 
@@ -15,11 +23,11 @@ def scale_intervals(from_a, from_b, to_c, to_d, x):
 
 
 def get_a_j(j, f, x, n):
-    return 2 / n * sum([f(x[i]) * np.cos(j * x[i]) for i in range(n)])
+    return 2 * sum([f(x[i]) * np.cos(j * x[i]) for i in range(n - 1)]) / n
 
 
 def get_b_j(j, f, x, n):
-    return 2 / n * sum([f(x[i]) * np.sin(j * x[i]) for i in range(n)])
+    return 2 * sum([f(x[i]) * np.sin(j * x[i]) for i in range(n - 1)]) / n
 
 
 def approximate(x, a, b, m):
@@ -30,7 +38,6 @@ def calculate(f, n, m):
     # trzeba potestować czym jest n a czym m
     x = np.linspace(A, B, n)
     y = f(x)
-
     x_scaled = scale_intervals(A, B, -np.pi, np.pi, x)
 
     # print(x_scaled)
@@ -39,10 +46,11 @@ def calculate(f, n, m):
     b = [get_b_j(j, f, x_scaled, n) for j in range(m + 1)]
 
     xaxis = np.linspace(A, B, POINTS)
-    yaxis = approximate(xaxis, a, b, m)
+    # xaxis_scaled = scale_intervals(A, B, -np.pi, np.pi, xaxis)
+    yaxis_scaled = approximate(xaxis, a, b, m)
 
-    draw(f, x, y, n, m, xaxis, yaxis)
-    return estimate_error2(f, xaxis, yaxis)
+    draw(f, x, y, n, m, xaxis, yaxis_scaled)
+    return estimate_error2(f, xaxis, yaxis_scaled)
 
 
 def estimate_error2(f, x, y):
@@ -66,4 +74,4 @@ def draw(f, x, y, n, m, xaxis, yaxis):
 
 
 if __name__ == "__main__":
-    calculate(fun, 200, 50)
+    calculate(fun, 150, 15)
