@@ -9,6 +9,9 @@
       <excludeFolder url="file://$MODULE_DIR$/lab4/img" />
       <excludeFolder url="file://$MODULE_DIR$/lab5/data" />
       <excludeFolder url="file://$MODULE_DIR$/lab5/img" />
+      <excludeFolder url="file://$MODULE_DIR$/lab1/img" />
+      <excludeFolder url="file://$MODULE_DIR$/lab2/img" />
+      <excludeFolder url="file://$MODULE_DIR$/lab2/results" />
     </content>
     <orderEntry type="jdk" jdkName="Python 3.10" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
