@@ -1,21 +1,21 @@
 import numpy as np
 from matplotlib import pyplot as plt
 
-A = -np.pi
-B = 2 * np.pi
+# A = -np.pi
+# B = 2 * np.pi
 POINTS = 1000
 
 
-# def fun(x, k=1, m=2):
-#     return np.exp(-k * np.sin(m * x)) + k * np.cos(m * x)
-#
-#
-# A = -2 * np.pi
-# B = 3 * np.pi
+def fun(x, k=1, m=2):
+    return np.exp(-k * np.sin(m * x)) + k * np.cos(m * x)
 
 
-def fun(x, k=3, m=3):
-    return np.exp(-k * np.sin(m * x)) + k * np.sin(m * x) - 1
+A = -2 * np.pi
+B = 3 * np.pi
+
+
+# def fun(x, k=3, m=3):
+#     return np.exp(-k * np.sin(m * x)) + k * np.sin(m * x) - 1
 
 
 def scale_intervals(from_a, from_b, to_c, to_d, x):
