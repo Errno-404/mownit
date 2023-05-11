@@ -3,8 +3,9 @@ from matplotlib import pyplot as plt
 import os
 import csv
 
-IMG_PATH = "./img"
-ERROR_PATH = "./data"
+FIG = True
+IMG_PATH = "../img"
+ERROR_PATH = "../data"
 
 A = -np.pi
 B = 2 * np.pi
@@ -20,6 +21,7 @@ def scale_intervals(from_a, from_b, to_c, to_d, x):
 
 
 def get_a_j(j, f, x, n):
+
     return 2 / n * sum([f(x[i]) * np.cos(j * x[i]) for i in range(n)])
 
 
@@ -43,12 +45,14 @@ def calculate(f, n, m):
     a = [get_a_j(j, f, x_scaled, n) for j in range(m + 1)]
     b = [get_b_j(j, f, x_scaled, n) for j in range(m + 1)]
 
-    print(a, b)
+    print("WSP a: ", a)
+    print("WSP b: ", b)
 
     xaxis = np.linspace(A, B, POINTS)
     yaxis = approximate(xaxis, a, b, m)
 
-    draw(f, x, y, n, m, xaxis, yaxis)
+    if FIG is True:
+        draw(f, x, y, n, m, xaxis, yaxis)
     return estimate_error2(f, xaxis, yaxis)
 
 
@@ -85,3 +89,28 @@ if __name__ == "__main__":
             writer.writerow(["m", "n", "error"])
 
     csv_lines = []
+
+    if not FIG:
+        for n in range(5, 100, 5):
+            for m in range(1, int((n - 1) / 2) + 1):
+                row = [m, n, calculate(fun, n, m)]
+                csv_lines.append(row)
+
+        for m in range(5, 100, 5):
+            for n in range(2 * m + 1, 100, 5):
+                row = [m, n, calculate(fun, n, m)]
+                csv_lines.append(row)
+
+        with open(ERROR_PATH + "/errors.csv", 'a', newline='') as file:
+            writer = csv.writer(file)
+            for row in csv_lines:
+                writer.writerow(row)
+
+
+    else:
+        n = int(input("n: "))
+        m = int(input("m: "))
+        row = [m, n, calculate(fun, n, m)]
+       	with open(ERROR_PATH + "/errors.csv", 'a', newline='') as file:
+            writer = csv.writer(file)
+            writer.writerow(row)
