@@ -217,7 +217,7 @@ def main():
                     if m < 10:
                         m += 1
                     else:
-                        m+= 5
+                        m += 5
         else:
 
             print("Unknown command!")
