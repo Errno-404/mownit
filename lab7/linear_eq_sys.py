@@ -57,7 +57,7 @@ def create_matrix_A_float32(n):
         for j in range(n):
             A[i, j] = 1.0 / np.float32(i + j + 1)
 
-    return A
+    return A, np.linalg.cond(A, p=2)
 
 
 def create_matrix_A_float64(n):
@@ -68,7 +68,7 @@ def create_matrix_A_float64(n):
         for j in range(n):
             A[i, j] = 1.0 / np.float64(i + j + 1)
 
-    return A
+    return A, np.linalg.cond(A, p=2)
 
 
 def create_matrix_A_2_float64(n):
@@ -79,7 +79,7 @@ def create_matrix_A_2_float64(n):
                 A[i][j] = 2 * (i + 1) / (j + 1)
             else:
                 A[i][j] = A[j][i]
-    return A
+    return A, np.linalg.cond(A, p=2)
 
 
 def create_matrix_A_2_float32(n):
@@ -90,7 +90,7 @@ def create_matrix_A_2_float32(n):
                 A[i][j] = 2 * (i + 1) / (j + 1)
             else:
                 A[i][j] = A[j][i]
-    return A
+    return A, np.linalg.cond(A, p=2)
 
 
 def calculate_B_float32(A, x):
@@ -151,34 +151,36 @@ def zad1():
     for n in range(3, 21):
         x = generate_permutation_vector(n)
         print("========== Float64 ==========")
-        a = create_matrix_A_float64(n)
+        a, cond = create_matrix_A_float64(n)
         b = calculate_B_float64(a, x)
         x_64 = gauss_elimination_float64(a, b)
         e_norm_64 = euclidean_norm_float64(x, x_64)
         m_norm_64 = max_norm_float64(x, x_64)
-        res_64.append([n, e_norm_64, m_norm_64])
+        res_64.append([n, e_norm_64, m_norm_64, cond, cond * np.linalg.norm(b)])
 
         print(f"\t n = {n}")
         print("\t x_origin: ", x)
         print("\t x_solved: ", x_64)
         print("\t euclidean_norm: ", e_norm_64)
         print("\t maximum_norm: ", m_norm_64)
+        print("\t cond: ", cond)
         print()
 
         print()
         print("========== Float32 ==========")
-        a = create_matrix_A_float32(n)
+        a, cond = create_matrix_A_float32(n)
         b = calculate_B_float32(a, x)
         x_32 = gauss_elimination_float32(a, b)
         e_norm_32 = euclidean_norm_float32(x, x_32)
         m_norm_32 = max_norm_float32(x, x_32)
-        res_32.append([n, e_norm_32, m_norm_32])
+        res_32.append([n, e_norm_32, m_norm_32, cond, cond * np.linalg.norm(b)])
 
         print(f"\t n = {n}")
         print("\t x_origin: ", x)
         print("\t x_solved: ", x_32)
         print("\t euclidean_norm: ", e_norm_32)
         print("\t maximum_norm: ", m_norm_32)
+        print("\t cond: ", cond)
     return res_32, res_64
 
 
@@ -186,42 +188,44 @@ def zad2():
     res_64 = []
     res_32 = []
     matrix_sizes = [n for n in range(3, 21)]
-    matrix_sizes += [50, 100, 200, 500, 1000, 1500, 2000] # 5000, 10_000
+    matrix_sizes += [50, 100, 200, 500, 1000, 1500, 2000, 5000]
     for n in matrix_sizes:
         x = generate_permutation_vector(n)
         print("========== Float64 ==========")
-        a = create_matrix_A_2_float64(n)
+        a, cond = create_matrix_A_2_float64(n)
         b = calculate_B_float64(a, x)
         x_64 = gauss_elimination_float64(a, b)
         e_norm_64 = euclidean_norm_float64(x, x_64)
         m_norm_64 = max_norm_float64(x, x_64)
-        res_64.append([n, e_norm_64, m_norm_64])
+        res_64.append([n, e_norm_64, m_norm_64, cond, cond * np.linalg.norm(b)])
 
         print(f"\t n = {n}")
         print("\t x_origin: ", x)
         print("\t x_solved: ", x_64)
         print("\t euclidean_norm: ", e_norm_64)
         print("\t maximum_norm: ", m_norm_64)
+        print("\t cond: ", cond)
         print()
 
         print("========== Float32 ==========")
-        a = create_matrix_A_2_float32(n)
+        a, cond = create_matrix_A_2_float32(n)
         b = calculate_B_float32(a, x)
         x_32 = gauss_elimination_float32(a, b)
         e_norm_32 = euclidean_norm_float32(x, x_32)
         m_norm_32 = max_norm_float32(x, x_32)
-        res_32.append([n, e_norm_32, m_norm_32])
+        res_32.append([n, e_norm_32, m_norm_32, cond, cond * np.linalg.norm(b)])
 
         print(f"\t n = {n}")
         print("\t x_origin: ", x)
         print("\t x_solved: ", x_32)
         print("\t euclidean_norm: ", e_norm_32)
         print("\t maximum_norm: ", m_norm_32)
+        print("\t cond: ", cond)
     return res_32, res_64
 
 
 if __name__ == "__main__":
-    header = ["n", "euclidean_norm", "maximum_norm"]
+    header = ["n", "euclidean_norm", "maximum_norm", "cond", "ex_cond"]
     print(".................. Zadanie 1 ...............")
     res_32, res_64 = zad1()
     ex_1_32_exists = False
