@@ -8,71 +8,59 @@ b = 1.2
 
 
 def fun(x):
-    return x ** 5 + x ** 4 - 2 * x - 5
+    return x ** 15 + x ** 12
 
 
 def d_fun(x):
-    return 5 * x ** 4 + 4 * x ** 3 - 2
+    return 15 * x ** 14 + 12 * x ** 11
 
 
 if __name__ == "__main__":
+    eps = float(input())
+
+    secants_from_a_left, secants_from_a_right = (solve_secants_from_a(fun, a, b, eps))
+    secants_from_b_left, secants_from_b_right = (solve_secants_from_b(fun, a, b, eps))
+
+    print(secants_from_a_left)
+
+    newtons_left = solve_newtons_from_a(fun, d_fun, a, b, eps)
+    newtons_right = solve_newtons_from_b(fun, d_fun, a, b, eps)
+
     if not os.path.exists("./data"):
         os.mkdir("./data")
 
-    eps = float(input())
-    a_ = a
-    b_ = b
+    if not os.path.isfile("./data/newtons_left.csv"):
+        newtons_left = [["eps", "a", "b", "res_root", "iter", "inc_root", "iter"]] + newtons_left
+    if not os.path.isfile("./data/newtons_right.csv"):
+        newtons_right = [["eps", "a", "b", "res_root", "iter", "inc_root", "iter"]] + newtons_right
 
-    newtons_left = [["eps", "a", "b", "res_root", "iter", "inc_root", "iter"]]
-    secants_left_left = [["eps", "a", "b", "res_root", "iter", "inc_root", "iter"]]  # start from a [a, a_]
-    secants_left_right = [["eps", "a", "b", "res_root", "iter", "inc_root", "iter"]]  # start from a [a_, b]
-    while a_ < b:
-        # newton from left
-        # noinspection DuplicatedCode
-        newtons_left.append([eps, a_, b, *newton_res(fun, d_fun, eps, a_), *newton_inc(fun, d_fun, eps, a_)])
+    # files for secants
+    if not os.path.isfile("./data/secants_from_a_left.csv"):
+        secants_from_a_left = [["eps", "a", "b", "res_root", "iter", "inc_root", "iter"]] + secants_from_a_left
+    if not os.path.isfile("./data/secants_from_a_right.csv"):
+        secants_from_a_right = [["eps", "a", "b", "res_root", "iter", "inc_root", "iter"]] + secants_from_a_right
+    if not os.path.isfile("./data/secants_from_b_left.csv"):
+        secants_from_b_left = [["eps", "a", "b", "res_root", "iter", "inc_root", "iter"]] + secants_from_b_left
+    if not os.path.isfile("./data/secants_from_b_right.csv"):
+        secants_from_b_right = [["eps", "a", "b", "res_root", "iter", "inc_root", "iter"]] + secants_from_b_right
 
-        # secants from left
-        secants_left_left.append([eps, a, a_, *secants_res(fun, eps, a, a_), *secants_inc(fun, eps, a, a_)])
-        secants_left_right.append([eps, a_, b, *secants_res(fun, eps, a_, b), *secants_inc(fun, eps, a_, b)])
-        a_ += 0.1
-
-    newtons_right = [["eps", "a", "b", "res_root", "iter", "inc_root", "iter"]]
-    secants_right_left = [["eps", "a", "b", "res_root", "iter", "inc_root", "iter"]]
-    secants_right_right = [["eps", "a", "b", "res_root", "iter", "inc_root", "iter"]]
-    while a < b_:
-        # noinspection DuplicatedCode
-        newtons_right.append([eps, a, b_, *newton_res(fun, d_fun, eps, b_), *newton_inc(fun, d_fun, eps, b_)])
-        secants_right_left.append([eps, a, b_, *secants_res(fun, eps, a, b_), *secants_inc(fun, eps, a, b_)])
-        secants_right_right.append([eps, b_, b, *secants_res(fun, eps, b_, b), *secants_inc(fun, eps, b_, b)])
-
-        b_ -= 0.1
-
-    with open("data/newtons_left.csv", 'w', newline='') as file:
+    with open("data/newtons_left.csv", 'a', newline='') as file:
         writer = csv.writer(file)
         writer.writerows(newtons_left)
-    with open("data/newtons_right.csv", 'w', newline='') as file:
+    with open("data/newtons_right.csv", 'a', newline='') as file:
         writer = csv.writer(file)
         writer.writerows(newtons_right)
 
-    with open("data/secants_left_left.csv", 'w', newline='') as file:
+    with open("data/secants_from_a_left.csv", 'a', newline='') as file:
         writer = csv.writer(file)
-        writer.writerows(secants_left_left)
-    with open("data/secants_left_right.csv", 'w', newline='') as file:
+        writer.writerows(secants_from_a_left)
+    with open("data/secants_from_a_right.csv", 'a', newline='') as file:
         writer = csv.writer(file)
-        writer.writerows(secants_left_right)
+        writer.writerows(secants_from_a_right)
 
-    with open("data/secants_right_left.csv", 'w', newline='') as file:
+    with open("data/secants_from_b_left.csv", 'a', newline='') as file:
         writer = csv.writer(file)
-        writer.writerows(secants_right_left)
-    with open("data/secants_right_right.csv", 'w', newline='') as file:
+        writer.writerows(secants_from_b_left)
+    with open("data/secants_from_b_right.csv", 'a', newline='') as file:
         writer = csv.writer(file)
-        writer.writerows(secants_right_right)
-
-    print(newtons_left)
-    print(newtons_right)
-
-    print(secants_left_left)
-    print(secants_left_right)
-
-    print(secants_right_left)
-    print(secants_right_right)
+        writer.writerows(secants_from_b_right)
