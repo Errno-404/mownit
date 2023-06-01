@@ -25,22 +25,23 @@ def solve_tridiagonal_system(a, b, c, d):
     d_star = np.zeros(n)
     x = np.zeros(n)
 
-    start = time.time_ns()
+    start = time.time()
     # Step 1: Forward elimination
     c_star[0] = c[0] / b[0]
     d_star[0] = d[0] / b[0]
 
+    for i in range(1, n - 1):
+        c_star[i] = c[i] / (b[i] - a[i] * c_star[i - 1])
+
     for i in range(1, n):
-        m = 1.0 / (b[i] - a[i] * c_star[i - 1])
-        c_star[i] = c[i] * m
-        d_star[i] = (d[i] - a[i] * d_star[i - 1]) * m
+        d_star[i] = (d[i] - a[i] * d_star[i - 1]) / (b[i] - a[i] * c_star[i - 1])
 
     # Step 2: Back substitution
     x[n - 1] = d_star[n - 1]
 
     for i in range(n - 2, -1, -1):
         x[i] = d_star[i] - c_star[i] * x[i + 1]
-    res = time.time_ns() - start
+    res = time.time() - start
     return x, res
 
 
@@ -81,13 +82,10 @@ def main(n, m, k):
     a, b, c = create_tri_diagonal_matrix(n, m, k)
     x = generate_permutation_vector(n)
     B = calculate_B(a, b, c, x, n)
-    x_solved, t1 = solve_tridiagonal_system(a, b, c, B)
-
-
-
+    x_solved, t = solve_tridiagonal_system(a, b, c, B)
 
     # print(euclidean_norm(x, x_solved))
-    print(max_norm(x, x_solved))
+    print(max_norm(x, x_solved), t)
 
 
 if __name__ == "__main__":
