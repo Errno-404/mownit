@@ -66,11 +66,11 @@ def max_norm(x, x_sol):
     return norm
 
 
-if __name__ == "__main__":
+def main():
     # np.set_printoptions(precision=15)
 
     ns = [i for i in range(3, 21)]
-    # ns = ns + [50, 100, 200, 500, 1000]
+    ns = ns + [50, 100, 200, 500, 1000, 1500]
 
     to_csv = []
 
@@ -79,8 +79,6 @@ if __name__ == "__main__":
         with open("results.csv", 'w', newline='') as file:
             writer = csv.writer(file)
             writer.writerow(csv_header)
-
-
 
     for n in ns:
         a, b, c = create_matrices_thomas(n)
@@ -106,3 +104,7 @@ if __name__ == "__main__":
     with open("results.csv", 'a', newline='') as file:
         writer = csv.writer(file)
         writer.writerows(to_csv)
+
+
+if __name__ == "__main__":
+    main()
