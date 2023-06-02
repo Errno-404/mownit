@@ -1,5 +1,3 @@
-import csv
-
 from gauss import gauss
 from thomas import thomas
 import numpy as np
