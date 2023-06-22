@@ -38,3 +38,4 @@ def gauss(A, B):
     total_size = getsizeof(A) + getsizeof(A[0]) * n + getsizeof(A[0][0]) * n * n + getsizeof(B) + getsizeof(
         B[0]) * n + getsizeof(n) + getsizeof(max_index) + getsizeof(max_value) + getsizeof(m) + getsizeof(s)
     return x, total_size, time_end - time_start
+
